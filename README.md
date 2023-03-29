@@ -2,7 +2,7 @@
 
 Um e-commerce pronto com backend api restfull e Machine Learning em Python, frontend React Js + Bootstrap. O projeto visa fornecer uma api robusta para que possa ser reutilizado com diversos modelos de frontend para e-commerce e com sistema de gestão de crédito prático.
 
-# Libs
+# Gerando o DB
 
 - `set FLASK_APP=app.py`
 - `flask db init`
