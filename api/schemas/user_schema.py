@@ -6,13 +6,14 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = user_model.User
         load_instance = True
-        fields = ('id', 'name', 'email', 'password', 'cpf', 'genre', 'neighborhood', 'street', 'number', 'state', 'city', 'zipCode')
+        fields = ('id', 'name', 'email', 'password', 'cpf', 'genre', 'neighborhood', 'street', 'number', 'state', 'city', 'zipCode', 'dateCreation')
 
     name = fields.String(required=True)
     email = fields.String(required=True)
     password = fields.String(required=True)     
     cpf = fields.String(required=True)
     genre = fields.String(required=True)
+    dateCreation = fields.DateTime(required=True)
 
 class updatePass(ma.SQLAlchemyAutoSchema):
     class Meta:

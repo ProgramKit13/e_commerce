@@ -46,9 +46,10 @@ class Register(Resource):
                 verify = False
                 errorTypes['email'] = 'E-mail inválido.'
 
-            if len(password) < 8 or len(password) > 20:
+            validatePass =validator.pass_validate(password)
+            if validatePass == False:
                 verify = False
-                errorTypes['pass'] = 'Senha deve conter entre 8 a 20 caracteres.'
+                errorTypes['password'] = 'Senha fora dos critérios.'
 
             if name.isalpha() is not True:
                 verify = False
@@ -59,8 +60,10 @@ class Register(Resource):
             if cpfValidate == False:
                 verify = False
                 errorTypes['cpf'] = 'Cpf inválido.'
-
-
+            
+            if genre != '1' and genre != '2' and genre != '3':
+                verify = False
+                errorTypes['genre'] = 'Opção inválida.'
 
             if verify:
                 salt = bcrypt.gensalt(8)

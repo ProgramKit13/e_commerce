@@ -6,3 +6,11 @@ def email_validate(email):
         return True  
     else:  
         return False
+    
+
+def pass_validate(password):
+    while not (re.search(r'.{8,}', password) and   
+           re.search(r'[A-Z]', password) and 
+           re.search(r'\d', password) and   
+           re.search(r'[!@#$%¨&*]', password)):
+        return False

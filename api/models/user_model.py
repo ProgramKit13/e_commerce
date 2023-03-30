@@ -1,7 +1,7 @@
 from api import db
 import enum
 from sqlalchemy import Enum
-from ..models import address_model
+from ..models import address_model, phone_model, userPayments_model, cart_models
 
 class genre(enum.Enum):
     masculino = 1
@@ -16,6 +16,10 @@ class User(db.Model):
     password = db.Column(db.String(64), nullable=False)
     cpf = db.Column(db.String(11), nullable=False)
     genre = db.Column(db.Enum(genre), nullable=False)
+    dateCreation = db.Column(db.DateTime, nullable=False)
     token = db.Column(db.String(64), nullable=False, unique=True)
 
     adresses = db.relationship(address_model.Address, backref="user", lazy="dynamic")
+    phone = db.relationship(phone_model.Phones, backref="user", lazy="dynamic")
+    payments = db.relationship(userPayments_model.UserPayments, backref="user", lazy="dynamic")
+    cart = db.relationship(cart_models.Cart, backref="user", lazy="dynamic")
