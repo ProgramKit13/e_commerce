@@ -1,10 +1,11 @@
 class User():
-    def __init__(self, name, email, password, cpf, genre, token):
+    def __init__(self, name, email, password, cpf, genre, dateCreation, token):
         self.__name = name
         self.__email = email
         self.__password = password
         self.__cpf = cpf
         self.__genre = genre
+        self.__dateCreation = dateCreation
         self.__token = token
 
 
@@ -51,6 +52,14 @@ class User():
     @genre.setter
     def genre(self, genre):
         self.__genre= genre
+
+    @property
+    def dateCreation(self):
+        return self.__dateCreation
+        
+    @dateCreation.setter
+    def dateCreation(self, dateCreation):
+        self.__dateCreation= dateCreation
 
     
     @property

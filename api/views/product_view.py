@@ -30,8 +30,11 @@ class ProdRegister(Resource):
             supplier = request.json['supplier']
             qt = request.json['qt']
             alterResale = request.json['alterResale']
+            discount = request.json['discount']
+            description = request.json['description']
+            datePurchase = request.json['datePurchase']
+            dateShelf = request.json['dateShelf']
             token = secrets.token_hex(32)
-
 
         if type(valueResale) != float:
             verify = False
@@ -41,13 +44,25 @@ class ProdRegister(Resource):
             verify = False
             errorTypes['cust'] = 'Formato inválido.'
         
-        if type(tax) != float:
-            verify = False
-            errorTypes['tax'] = 'Formato inválido.'
+        if tax:
+            if type(tax) != float:
+                verify = False
+                errorTypes['tax'] = 'Formato inválido.'
         
-        if type(alterResale) != float:
-            verify = False
-            errorTypes['alterResale'] = 'Formato inválido.'
+        if alterResale:
+            if type(alterResale) != float:
+                verify = False
+                errorTypes['alterResale'] = 'Formato inválido.'
+
+        if discount:
+            if type(discount) != float:
+                verify = False
+                errorTypes['discount'] = 'Formato inválido.'
+        
+        if description:
+            if len(description) > 1024:
+                verify = False
+                errorTypes['text'] = 'Quantidade de carácteres superam o permitido.'
 
         if type(qt) != int:
             verify = False
@@ -55,7 +70,7 @@ class ProdRegister(Resource):
 
         
         if verify:
-            new_prod = product.Product(prodName=prodName, valueResale=valueResale, cust=cust, tax=tax, supplier=supplier, qt=qt, alterResale=alterResale, token=token)
+            new_prod = product.Product(prodName=prodName, valueResale=valueResale, cust=cust, tax=tax, supplier=supplier, qt=qt, alterResale=alterResale, discount=discount, description=description, datePurchase=datePurchase, dateShelf=dateShelf, token=token)
             result = product_service.prod_register(new_prod)
             ref = ps.jsonify(result)
             return make_response(ref, 201)

@@ -2,7 +2,7 @@ from ..models import product_model
 from api import db
 
 def prod_register(prod):
-    prod_bd = product_model.Product(prodName=prod.prodName, valueResale=prod.valueResale, cust=prod.cust, tax=prod.tax, supplier=prod.supplier, qt=prod.qt, alterResale=prod.alterResale, token=prod.token)
+    prod_bd = product_model.Product(prodName=prod.prodName, valueResale=prod.valueResale, cust=prod.cust, tax=prod.tax, supplier=prod.supplier, qt=prod.qt, alterResale=prod.alterResale, discount=prod.discount, description=prod.description, datePurchase=prod.datePurchase, dateShelf=prod.dateShelf, token=prod.token)
     db.session.add(prod_bd)
     db.session.commit()
 

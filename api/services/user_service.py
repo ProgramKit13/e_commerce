@@ -2,7 +2,7 @@ from ..models import user_model, address_model
 from api import db
 
 def user_register(user):
-    user_bd = user_model.User(name=user.name, email=user.email, password=user.password, cpf=user.cpf, genre=user.genre, token=user.token)
+    user_bd = user_model.User(name=user.name, email=user.email, password=user.password, cpf=user.cpf, genre=user.genre, token=user.token, dateCreation=user.dateCreation)
     db.session.add(user_bd)
     db.session.commit()
 

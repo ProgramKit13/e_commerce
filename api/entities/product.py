@@ -1,5 +1,5 @@
 class Product():
-    def __init__(self, prodName, valueResale, cust, tax, supplier, qt, alterResale, token):
+    def __init__(self, prodName, valueResale, cust, tax, supplier, qt, alterResale, discount, description, datePurchase, dateShelf, token):
         self.__prodName = prodName
         self.__valueResale = valueResale
         self.__cust = cust
@@ -7,6 +7,10 @@ class Product():
         self.__supplier = supplier
         self.__qt = qt
         self.__alterResale = alterResale
+        self.__discount = discount
+        self.__description = description
+        self.__datePurchase = datePurchase
+        self.__dateShelf = dateShelf
         self.__token = token
 
 
@@ -69,7 +73,44 @@ class Product():
     @alterResale.setter
     def alterResale(self, alterResale):
         self.__alterResale= alterResale
+
+    @property
+    def discount(self):
+        return self.__discount
+        
+    @discount.setter
+    def discount(self, discount):
+        self.__discount= discount
+
+
+    @property
+    def description(self):
+        return self.__description
+        
+    @description.setter
+    def descriptiont(self, description):
+        self.__description = description
     
+
+    @property
+    def datePurchase(self):
+        return self.__datePurchase
+        
+    @datePurchase.setter
+    def datePurchase(self, datePurchase):
+        self.__datePurchase = datePurchase
+
+
+
+    @property
+    def dateShelf(self):
+        return self.__dateShelf
+        
+    @dateShelf.setter
+    def ddateShelf(self, dateShelf):
+        self.__dateShelf = dateShelf
+
+
     @property
     def token(self):
         return self.__token

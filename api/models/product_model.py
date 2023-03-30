@@ -13,8 +13,8 @@ class Product(db.Model):
     alterResale = db.Column(db.Float(9), nullable=True)
     discount = db.Column(db.Float(9), nullable=True)
     description = db.Column(db.Text, nullable=True)
-    datePurchase = db.Column(db.DateTime, nullable=False)
-    dateShelf = db.Column(db.DateTime, nullable=False)
+    datePurchase = db.Column(db.Date, nullable=False)
+    dateShelf = db.Column(db.Date, nullable=False)
     token = db.Column(db.String(64), unique=True, nullable=False)
     
     supplier = db.relationship(supplier_model.Supplier, backref="products", lazy="dynamic")

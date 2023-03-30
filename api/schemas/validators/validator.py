@@ -1,8 +1,10 @@
 import re
-regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
+regexEmail = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
+regexName = '/\b[A-Za-zÀ-ú][A-Za-zÀ-ú]+,?\s[A-Za-zÀ-ú][A-Za-zÀ-ú]{2,19}\b/gi'
+
 
 def email_validate(email):
-    if(re.search(regex,email)):  
+    if(re.search(regexEmail,email)):  
         return True  
     else:  
         return False

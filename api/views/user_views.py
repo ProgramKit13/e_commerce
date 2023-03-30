@@ -1,4 +1,5 @@
 from flask_restful import Resource
+from datetime import datetime
 from api import api
 from ..schemas import user_schema
 from flask import request, make_response, jsonify
@@ -39,7 +40,10 @@ class Register(Resource):
             password = request.json["password"]
             cpf = request.json["cpf"]
             genre = request.json['genre']
+            dateCreation = datetime.today()
             token = secrets.token_hex(32)
+
+            print(dateCreation)
 
             validateEmail = validator.email_validate(email)
             if validateEmail is not True:
@@ -68,7 +72,7 @@ class Register(Resource):
             if verify:
                 salt = bcrypt.gensalt(8)
                 hashPass = bcrypt.hashpw(password.encode('utf-8'), salt)
-                new_user = user.User(name=name, email=email, password=hashPass, cpf=cpf, genre=genre, token=token)
+                new_user = user.User(name=name, email=email, password=hashPass, cpf=cpf, genre=genre, token=token, dateCreation=dateCreation)
                 result = user_service.user_register(new_user)
                 ref = cs.jsonify(result)
                 return make_response(ref, 201)
