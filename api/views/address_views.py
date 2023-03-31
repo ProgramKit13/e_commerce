@@ -4,6 +4,9 @@ from ..schemas import address_schema
 from flask import request, make_response, jsonify
 from ..entities import address
 from ..services import address_service
+from ..schemas .validators import validator
+import pycep_correios
+from pycep_correios.exceptions import InvalidCEP
 
 class RegisterAddress(Resource):
      def post(self):
@@ -23,6 +26,16 @@ class RegisterAddress(Resource):
             activate = request.json["activate"]
             idUser = request.json["idUser"]
 
+        if len(zipCode) == 9:
+            try:
+                addressFind = pycep_correios.get_address_from_cep(zipCode)
+            except InvalidCEP as exc:
+                verify = False
+                errorTypes['zipCode'] = 'Cep Inválido'
+        else :
+            verify = False
+            errorTypes['zipCode'] = 'CEP inválido.'
+
         if number.isdecimal() is not True:
             verify = False
             errorTypes['number'] = 'Número inválido.'
@@ -31,9 +44,6 @@ class RegisterAddress(Resource):
             verify = False
             errorTypes['state'] = 'Estado inválido.'
         
-        if len(zipCode) > 9 or len(zipCode) < 9 or zipCode.isdecimal is not True:
-            verify = False
-            errorTypes['zipCode'] = 'CEP inválido.'
         
         if activate != "1" and activate != "2" or activate.isdecimal() is not True:
             verify = False
@@ -57,14 +67,6 @@ class ListAdresses(Resource):
         return make_response(jsonify(adressesListAll), 200)
 
 
-
-class SearchAddress(Resource):
-       def get(self, id):
-           address = address_service.address_list_id(id)  
-           if address is None:
-               return make_response(jsonify("Endereço não encontrado"), 404)
-           ads = address_schema.AddressSchema()
-           return make_response(ads.jsonify(address), 200)
 
 class updateAddress(Resource):
      def put(self, id):
@@ -101,5 +103,4 @@ class deleteAddress(Resource):
 api.add_resource(RegisterAddress, '/address&register')
 api.add_resource(updateAddress, '/update&address/<int:id>')
 api.add_resource(ListAdresses, '/search&adresses/<int:id>')
-api.add_resource(SearchAddress, '/search&address/<int:id>')
 api.add_resource(deleteAddress, '/delete&address/<int:id>')

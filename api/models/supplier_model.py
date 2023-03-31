@@ -12,6 +12,5 @@ class Supplier(db.Model):
     number = db.Column(db.String(9), nullable=False)
     complement = db.Column(db.String(100), nullable=False)
     cnpj = db.Column(db.String(14), nullable=False)
-    idProduct = db.Column(db.Integer, db.ForeignKey("products.id"), nullable=False)
-
+    
     supPhone = db.relationship(supPhone_model.SupPhones, backref="suppliers", lazy="dynamic")

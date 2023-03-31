@@ -8,7 +8,6 @@ from ..services import user_service
 from ..schemas.validators import validator
 import secrets
 from validate_docbr import CPF
-import bcrypt
 
 class UserList(Resource):
     def get(self):
@@ -22,8 +21,8 @@ class UserSearchId(Resource):
         user = user_service.user_list_id(id)
         if user is None:
             return make_response(jsonify("Usuário não encontrado"), 404)
-        ps = user_schema.UserSchema()
-        return make_response(ps.jsonify(user), 200)
+        us = user_schema.UserSchema()
+        return make_response(us.jsonify(user), 200)
     
 
 class Register(Resource):
@@ -35,15 +34,14 @@ class Register(Resource):
         if validate:
             return make_response(jsonify(validate), 400)
         else:
-            name = request.json['name']
+            firstName = request.json['firstName']
+            lastName = request.json['lastName']
             email = request.json["email"]
             password = request.json["password"]
             cpf = request.json["cpf"]
             genre = request.json['genre']
             dateCreation = datetime.today()
             token = secrets.token_hex(32)
-
-            print(dateCreation)
 
             validateEmail = validator.email_validate(email)
             if validateEmail is not True:
@@ -55,9 +53,14 @@ class Register(Resource):
                 verify = False
                 errorTypes['password'] = 'Senha fora dos critérios.'
 
-            if name.isalpha() is not True:
+            if firstName.isalpha() is not True:
                 verify = False
-                errorTypes['name'] = 'Nome com espaços ou caracteres especiais.'
+                errorTypes['firstName'] = 'Nome com espaços ou caracteres especiais.'
+
+            
+            if lastName.isalpha() is not True:
+                verify = False
+                errorTypes['lastName'] = 'Nome com espaços ou caracteres especiais.'
 
             validateCPF = CPF()
             cpfValidate = validateCPF.validate(cpf)
@@ -70,23 +73,13 @@ class Register(Resource):
                 errorTypes['genre'] = 'Opção inválida.'
 
             if verify:
-                salt = bcrypt.gensalt(8)
-                hashPass = bcrypt.hashpw(password.encode('utf-8'), salt)
-                new_user = user.User(name=name, email=email, password=hashPass, cpf=cpf, genre=genre, token=token, dateCreation=dateCreation)
+                new_user = user.User(firstName=firstName, lastName=lastName, email=email, password=password, cpf=cpf, genre=genre, token=token, dateCreation=dateCreation)
                 result = user_service.user_register(new_user)
                 ref = cs.jsonify(result)
                 return make_response(ref, 201)
             else:
                 return make_response(jsonify(errorTypes), 404)
 
-
-class SearchUser(Resource):
-       def get(self, id):
-           user = user_service.user_list_id(id)  
-           if user is None:
-               return make_response(jsonify("Usuário não encontrado"), 404)
-           cs = user_schema.UserSchema()
-           return make_response(cs.jsonify(user), 200)
 
 class updatePass(Resource):
      def put(self, id):

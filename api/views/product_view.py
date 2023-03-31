@@ -78,7 +78,7 @@ class ProdRegister(Resource):
             return make_response(jsonify(errorTypes), 404)
     
     
-
+    
 class ProdSearchId(Resource):
     def get(self, id):
         product = product_service.product_list_id(id)
@@ -86,6 +86,7 @@ class ProdSearchId(Resource):
             return make_response(jsonify("Produto não encontrado"), 404)
         ps = prod_schema.ProdSchema()
         return make_response(ps.jsonify(product), 200)
+
 
 class updateProduct(Resource):
     def put(self, id):

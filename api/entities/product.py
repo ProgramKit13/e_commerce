@@ -24,6 +24,7 @@ class Product():
         self.__prodName = prodName
 
         
+
     @property
     def valueResale(self):
         return self.__valueResale
@@ -88,7 +89,7 @@ class Product():
         return self.__description
         
     @description.setter
-    def descriptiont(self, description):
+    def description(self, description):
         self.__description = description
     
 
@@ -107,7 +108,7 @@ class Product():
         return self.__dateShelf
         
     @dateShelf.setter
-    def ddateShelf(self, dateShelf):
+    def dateShelf(self, dateShelf):
         self.__dateShelf = dateShelf
 
 
@@ -119,5 +120,3 @@ class Product():
     def token(self, token):
         self.__token= token
 
-
-        

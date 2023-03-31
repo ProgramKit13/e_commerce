@@ -1,6 +1,7 @@
 class User():
-    def __init__(self, name, email, password, cpf, genre, dateCreation, token):
-        self.__name = name
+    def __init__(self, firstName, lastName, email, password, cpf, genre, dateCreation, token):
+        self.__firstName = firstName
+        self.__lastName = lastName
         self.__email = email
         self.__password = password
         self.__cpf = cpf
@@ -11,12 +12,20 @@ class User():
 
     
     @property
-    def name(self):
-        return self.__name
+    def firstName(self):
+        return self.__firstName
         
-    @name.setter
-    def name(self, name):
-        self.__name = name
+    @firstName.setter
+    def firstName(self, firstName):
+        self.__firstName = firstName
+
+    @property
+    def lastName(self):
+        return self.__lastName
+        
+    @lastName.setter
+    def lastName(self, lastName):
+        self.__lastName = lastName
 
         
     @property

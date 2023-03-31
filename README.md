@@ -32,3 +32,5 @@ Um e-commerce pronto com backend api restfull e Machine Learning em Python, fron
 - `pip install mysqlclient`
 - `pip install bcrypt`
 - `pip install validate-docbr`
+- `pip install flask-jwt-extended`
+- `pip install passlib`

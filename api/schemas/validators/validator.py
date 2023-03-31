@@ -3,6 +3,12 @@ regexEmail = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
 regexName = '/\b[A-Za-zÀ-ú][A-Za-zÀ-ú]+,?\s[A-Za-zÀ-ú][A-Za-zÀ-ú]{2,19}\b/gi'
 
 
+def zipCode_validate(zipCode):
+    code = re.compile('d{5}-d{3}')
+    test = code.match(zipCode)
+    print(test)
+
+
 def email_validate(email):
     if(re.search(regexEmail,email)):  
         return True  

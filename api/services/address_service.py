@@ -28,10 +28,6 @@ def adressesList(id):
     return adressesDetails
 
 
-def address_list_id(id):
-    address = address_model.Address.query.filter_by(id=id).first()
-    return address
-
 def delete_address(address):
     db.session.delete(address)
     db.session.commit()

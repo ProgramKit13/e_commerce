@@ -2,7 +2,9 @@ from ..models import user_model, address_model
 from api import db
 
 def user_register(user):
-    user_bd = user_model.User(name=user.name, email=user.email, password=user.password, cpf=user.cpf, genre=user.genre, token=user.token, dateCreation=user.dateCreation)
+    print(user)
+    user_bd = user_model.User(firstName=user.firstName, lastName=user.lastName, email=user.email, password=user.password, cpf=user.cpf, genre=user.genre, token=user.token, dateCreation=user.dateCreation)
+    user_bd.encrypt_pass()
     db.session.add(user_bd)
     db.session.commit()
 
@@ -42,3 +44,8 @@ def user_list_id(id):
 def pass_update(oldPass, newPass):
     oldPass.password = newPass.password
     db.session.commit()
+
+
+
+def user_email(email):
+    return user_model.User.query.filter_by(email=email).first()
