@@ -1,5 +1,5 @@
 class User():
-    def __init__(self, firstName, lastName, email, password, cpf, genre, dateCreation, token):
+    def __init__(self, firstName, lastName, email, password, cpf, genre, dateCreation, token, adminAccess):
         self.__firstName = firstName
         self.__lastName = lastName
         self.__email = email
@@ -8,6 +8,7 @@ class User():
         self.__genre = genre
         self.__dateCreation = dateCreation
         self.__token = token
+        self.__adminAccess = adminAccess
 
 
     
@@ -78,3 +79,12 @@ class User():
     @token.setter
     def token(self, token):
         self.__token= token
+
+
+    @property
+    def adminAccess(self):
+        return self.__adminAccess
+        
+    @adminAccess.setter
+    def adminAccess(self, adminAccess):
+        self.__adminAccess= adminAccess

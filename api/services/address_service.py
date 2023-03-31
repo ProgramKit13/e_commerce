@@ -44,6 +44,10 @@ def address_update(oldAdress, newAddress):
     db.session.commit()
 
 
+def address_list_id(id):
+    address = address_model.Address.query.filter_by(id=id).first()
+    return address
+
 def address_delete(product):
     db.session.delete(product)
     db.session.commit()

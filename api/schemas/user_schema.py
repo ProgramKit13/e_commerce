@@ -6,7 +6,7 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = user_model.User
         load_instance = True
-        fields = ('id', 'firstName', 'lastName', 'email', 'password', 'cpf', 'genre', 'neighborhood', 'street', 'number', 'state', 'city', 'zipCode')
+        fields = ('id', 'firstName', 'lastName', 'email', 'password', 'cpf', 'genre', 'neighborhood', 'street', 'number', 'state', 'city', 'zipCode', 'adminAccess')
 
     firstName = fields.String(required=True)
     lastName = fields.String(required=True)
@@ -14,6 +14,7 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
     password = fields.String(required=True)     
     cpf = fields.String(required=True)
     genre = fields.String(required=True)
+    adminAccess = fields.Boolean(required=True)
 
 class updatePass(ma.SQLAlchemyAutoSchema):
     class Meta:

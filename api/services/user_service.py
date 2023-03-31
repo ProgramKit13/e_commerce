@@ -3,7 +3,7 @@ from api import db
 
 def user_register(user):
     print(user)
-    user_bd = user_model.User(firstName=user.firstName, lastName=user.lastName, email=user.email, password=user.password, cpf=user.cpf, genre=user.genre, token=user.token, dateCreation=user.dateCreation)
+    user_bd = user_model.User(firstName=user.firstName, lastName=user.lastName, email=user.email, password=user.password, cpf=user.cpf, genre=user.genre, token=user.token, dateCreation=user.dateCreation, adminAccess=user.adminAccess)
     user_bd.encrypt_pass()
     db.session.add(user_bd)
     db.session.commit()
@@ -15,7 +15,8 @@ def user_list():
     users = user_model.User.query.all()
     return users
 
-
+def get_user_id(id):
+    return user_model.User.query.filter_by(id=id).first()
 
 def user_list_id(id):
     result = db.session.query(address_model.Address).join(user_model.User).filter(address_model.Address.idUser==id).filter(address_model.Address.activate==1).first()

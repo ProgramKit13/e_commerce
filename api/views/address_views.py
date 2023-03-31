@@ -7,8 +7,10 @@ from ..services import address_service
 from ..schemas .validators import validator
 import pycep_correios
 from pycep_correios.exceptions import InvalidCEP
+from flask_jwt_extended import jwt_required, get_jwt
 
 class RegisterAddress(Resource):
+     @jwt_required()
      def post(self):
         verify = True
         errorTypes = {}
@@ -60,6 +62,7 @@ class RegisterAddress(Resource):
 
 
 class ListAdresses(Resource):
+    @jwt_required()
     def get(self, id):
         adressesListAll = address_service.adressesList(id)
         if adressesListAll is None or adressesListAll == []:
@@ -69,6 +72,7 @@ class ListAdresses(Resource):
 
 
 class updateAddress(Resource):
+     @jwt_required()
      def put(self, id):
         address_bd = address_service.address_list_id(id)
         if address_bd is None:
@@ -92,8 +96,14 @@ class updateAddress(Resource):
         msgm = 'Endereço atualizado com sucesso.'
         return msgm
      
+
+
 class deleteAddress(Resource):
+    @jwt_required()
     def delete(self, id):
+        claims = get_jwt()
+        if claims['rules'] != 'admin':
+            return make_response(jsonify(msgm = 'Recurso permitido apenas para administradores.'), 403)
         address_db = address_service.address_list_id(id)
         if address_db is None:
             return make_response(jsonify("Endereço não encontrado"), 404)

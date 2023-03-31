@@ -20,6 +20,7 @@ class User(db.Model):
     genre = db.Column(db.Enum(genre), nullable=False)
     dateCreation = db.Column(db.DateTime, nullable=False)
     token = db.Column(db.String(64), nullable=False, unique=True)
+    adminAccess = db.Column(db.Boolean)
 
     adresses = db.relationship(address_model.Address, backref="user", lazy="dynamic")
     phone = db.relationship(phone_model.Phones, backref="user", lazy="dynamic")

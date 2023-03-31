@@ -40,6 +40,7 @@ class Register(Resource):
             password = request.json["password"]
             cpf = request.json["cpf"]
             genre = request.json['genre']
+            adminAccess = request.json['adminAccess']
             dateCreation = datetime.today()
             token = secrets.token_hex(32)
 
@@ -73,7 +74,7 @@ class Register(Resource):
                 errorTypes['genre'] = 'Opção inválida.'
 
             if verify:
-                new_user = user.User(firstName=firstName, lastName=lastName, email=email, password=password, cpf=cpf, genre=genre, token=token, dateCreation=dateCreation)
+                new_user = user.User(firstName=firstName, lastName=lastName, email=email, password=password, cpf=cpf, genre=genre, token=token, dateCreation=dateCreation, adminAccess=adminAccess)
                 result = user_service.user_register(new_user)
                 ref = cs.jsonify(result)
                 return make_response(ref, 201)
