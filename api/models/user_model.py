@@ -19,7 +19,8 @@ class User(db.Model):
     cpf = db.Column(db.String(11), nullable=False)
     genre = db.Column(db.Enum(genre), nullable=False)
     dateCreation = db.Column(db.DateTime, nullable=False)
-    token = db.Column(db.String(64), nullable=False, unique=True)
+    token = db.Column(db.String(16), nullable=False, unique=True)
+    apiKey = db.Column(db.String(100), nullable=False, unique=True)
     adminAccess = db.Column(db.Boolean)
 
     adresses = db.relationship(address_model.Address, backref="user", lazy="dynamic")

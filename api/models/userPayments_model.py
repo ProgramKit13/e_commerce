@@ -26,7 +26,7 @@ class UserPayments(db.Model):
     idUser = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     datePayment = db.Column(db.DateTime, nullable=False)
     dateStatus = db.Column(db.DateTime, nullable=False)
-    token = db.Column(db.String(64), nullable=False, unique=True)
+    token = db.Column(db.String(16), nullable=False, unique=True)
 
     cart = db.relationship(cart_models.Cart, backref="user_payments", lazy="dynamic")
     

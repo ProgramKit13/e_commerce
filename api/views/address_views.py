@@ -3,15 +3,19 @@ from api import api
 from ..schemas import address_schema
 from flask import request, make_response, jsonify
 from ..entities import address
-from ..services import address_service
+from ..services import address_service, user_service
 from ..schemas .validators import validator
 import pycep_correios
 from pycep_correios.exceptions import InvalidCEP
-from flask_jwt_extended import jwt_required, get_jwt
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from ..decorators import admin_required, api_key_required
+
 
 class RegisterAddress(Resource):
-     @jwt_required()
+     @jwt_required()  
      def post(self):
+        current_user = get_jwt_identity()
+        checkToken = user_service.get_user(current_user)
         verify = True
         errorTypes = {}
         cs = address_schema.AddressSchema()
@@ -26,7 +30,7 @@ class RegisterAddress(Resource):
             city = request.json['city']
             zipCode = request.json["zipCode"]
             activate = request.json["activate"]
-            idUser = request.json["idUser"]
+            tokenUser = checkToken
 
         if len(zipCode) == 9:
             try:
@@ -53,7 +57,7 @@ class RegisterAddress(Resource):
             
 
         if verify == True:
-            new_address = address.Address(neighborhood=neighborhood, street=street, number=number, state=state, city=city, zipCode=zipCode, activate=activate, idUser=idUser)
+            new_address = address.Address(neighborhood=neighborhood, street=street, number=number, state=state, city=city, zipCode=zipCode, activate=activate, tokenUser=tokenUser)
             result = address_service.address_register(new_address)
             ref = cs.jsonify(result)
             return make_response(ref, 201)
@@ -99,11 +103,8 @@ class updateAddress(Resource):
 
 
 class deleteAddress(Resource):
-    @jwt_required()
+    @admin_required
     def delete(self, id):
-        claims = get_jwt()
-        if claims['rules'] != 'admin':
-            return make_response(jsonify(msgm = 'Recurso permitido apenas para administradores.'), 403)
         address_db = address_service.address_list_id(id)
         if address_db is None:
             return make_response(jsonify("Endereço não encontrado"), 404)

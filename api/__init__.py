@@ -5,6 +5,7 @@ from flask_migrate import Migrate
 from flask_marshmallow import Marshmallow
 from flask_jwt_extended import JWTManager
 
+
 app = Flask(__name__)
 app.config.from_object('config')
 
@@ -15,4 +16,5 @@ api = Api(app)
 jwt = JWTManager(app)
 
 from .views import user_views, product_view, address_views, login_views, refresh_token_views
+from .views.admin import admin_user_views
 from .models import user_model, address_model, phone_model, supplier_model, supPhone_model, userPayments_model, cart_models, product_model

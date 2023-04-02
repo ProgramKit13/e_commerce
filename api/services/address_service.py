@@ -2,7 +2,7 @@ from ..models import address_model, user_model
 from api import db
 
 def address_register(address):
-    address_bd = address_model.Address(neighborhood=address.neighborhood, street=address.street, number=address.number, state=address.state, city=address.city, zipCode=address.zipCode, activate=address.activate, idUser=address.idUser)
+    address_bd = address_model.Address(neighborhood=address.neighborhood, street=address.street, number=address.number, state=address.state, city=address.city, zipCode=address.zipCode, activate=address.activate, tokenUser=address.tokenUser)
     db.session.add(address_bd)
     db.session.commit()
 

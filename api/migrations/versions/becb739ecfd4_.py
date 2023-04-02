@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 17d83306fe35
+Revision ID: becb739ecfd4
 Revises: 
-Create Date: 2023-03-31 11:57:30.682799
+Create Date: 2023-04-01 12:25:03.120867
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '17d83306fe35'
+revision = 'becb739ecfd4'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -31,7 +31,7 @@ def upgrade():
     sa.Column('description', sa.Text(), nullable=True),
     sa.Column('datePurchase', sa.Date(), nullable=False),
     sa.Column('dateShelf', sa.Date(), nullable=False),
-    sa.Column('token', sa.String(length=64), nullable=False),
+    sa.Column('token', sa.String(length=16), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('id'),
     sa.UniqueConstraint('token')
@@ -58,8 +58,11 @@ def upgrade():
     sa.Column('cpf', sa.String(length=11), nullable=False),
     sa.Column('genre', sa.Enum('masculino', 'feminino', 'outros', name='genre'), nullable=False),
     sa.Column('dateCreation', sa.DateTime(), nullable=False),
-    sa.Column('token', sa.String(length=64), nullable=False),
+    sa.Column('token', sa.String(length=16), nullable=False),
+    sa.Column('apiKey', sa.String(length=100), nullable=False),
+    sa.Column('adminAccess', sa.Boolean(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('apiKey'),
     sa.UniqueConstraint('id'),
     sa.UniqueConstraint('token')
     )
@@ -72,8 +75,8 @@ def upgrade():
     sa.Column('city', sa.String(length=100), nullable=False),
     sa.Column('zipCode', sa.String(length=9), nullable=False),
     sa.Column('activate', sa.Enum('active', 'inative', name='active'), nullable=False),
-    sa.Column('idUser', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['idUser'], ['user.id'], ),
+    sa.Column('tokenUser', sa.String(length=16), nullable=False),
+    sa.ForeignKeyConstraint(['tokenUser'], ['user.token'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('id')
     )
@@ -105,7 +108,7 @@ def upgrade():
     sa.Column('idUser', sa.Integer(), nullable=False),
     sa.Column('datePayment', sa.DateTime(), nullable=False),
     sa.Column('dateStatus', sa.DateTime(), nullable=False),
-    sa.Column('token', sa.String(length=64), nullable=False),
+    sa.Column('token', sa.String(length=16), nullable=False),
     sa.ForeignKeyConstraint(['idUser'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('id'),
@@ -120,7 +123,7 @@ def upgrade():
     sa.Column('idUser', sa.Integer(), nullable=False),
     sa.Column('idProduct', sa.Integer(), nullable=False),
     sa.Column('idPayment', sa.Integer(), nullable=False),
-    sa.Column('token', sa.String(length=64), nullable=False),
+    sa.Column('token', sa.String(length=16), nullable=False),
     sa.ForeignKeyConstraint(['idPayment'], ['user_payments.id'], ),
     sa.ForeignKeyConstraint(['idProduct'], ['products.id'], ),
     sa.ForeignKeyConstraint(['idUser'], ['user.id'], ),

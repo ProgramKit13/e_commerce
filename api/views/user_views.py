@@ -8,24 +8,10 @@ from ..services import user_service
 from ..schemas.validators import validator
 import secrets
 from validate_docbr import CPF
+import uuid
+from ..decorators import admin_required, api_key_required
 
-class UserList(Resource):
-    def get(self):
-        users = user_service.user_list()
-        cs = user_schema.UserSchema(many=True)
-        return make_response(cs.jsonify(users), 200)
-
-
-class UserSearchId(Resource):
-    def get(self, id):
-        user = user_service.user_list_id(id)
-        if user is None:
-            return make_response(jsonify("Usuário não encontrado"), 404)
-        us = user_schema.UserSchema()
-        return make_response(us.jsonify(user), 200)
-    
-
-class Register(Resource):
+class userRegister(Resource):
      def post(self):
         verify = True
         errorTypes = {}
@@ -40,10 +26,10 @@ class Register(Resource):
             password = request.json["password"]
             cpf = request.json["cpf"]
             genre = request.json['genre']
-            adminAccess = request.json['adminAccess']
+            adminAccess = False
             dateCreation = datetime.today()
-            token = secrets.token_hex(32)
-
+            token = secrets.token_hex(6)
+            apiKey = str(uuid.uuid4())
             validateEmail = validator.email_validate(email)
             if validateEmail is not True:
                 verify = False
@@ -74,7 +60,7 @@ class Register(Resource):
                 errorTypes['genre'] = 'Opção inválida.'
 
             if verify:
-                new_user = user.User(firstName=firstName, lastName=lastName, email=email, password=password, cpf=cpf, genre=genre, token=token, dateCreation=dateCreation, adminAccess=adminAccess)
+                new_user = user.User(firstName=firstName, lastName=lastName, email=email, password=password, cpf=cpf, genre=genre, token=token, dateCreation=dateCreation, adminAccess=adminAccess, apiKey=apiKey)
                 result = user_service.user_register(new_user)
                 ref = cs.jsonify(result)
                 return make_response(ref, 201)
@@ -82,25 +68,6 @@ class Register(Resource):
                 return make_response(jsonify(errorTypes), 404)
 
 
-class updatePass(Resource):
-     def put(self, id):
-        user_bd = user_service.user_list_id(id)
-        if user_bd is None:
-            return make_response(jsonify("Usuário não encontrado"), 404)
-        cs = user_schema.updatePass()
-        validate = cs.validate(request.json)
-        if validate:
-            return make_response(jsonify(validate), 404)
-        else:
-            password = request.json["password"]
-            new_pass = user.updatePass(password=password)
-            
-        
-        user_service.pass_update(user_bd, new_pass)
-        massage = 'Senha atualizada com sucesso.'
-        return massage 
 
-api.add_resource(UserList, '/user&list')
-api.add_resource(Register, '/user&register')
-api.add_resource(updatePass, '/update&password/<int:id>')
-api.add_resource(UserSearchId, '/search&user/<int:id>')
+
+api.add_resource(userRegister, '/user&register')

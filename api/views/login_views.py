@@ -48,7 +48,7 @@ class Login(Resource):
             if user_bd and user_bd.verify_pass(password):
                 access_token = create_access_token(
                     identity = user_bd.id,
-                    expires_delta=timedelta(seconds=1000)
+                    expires_delta=timedelta(seconds=900000)
                 )
 
                 refresh_token = create_refresh_token(

@@ -17,7 +17,7 @@ class Address(db.Model):
     city = db.Column(db.String(100), nullable=False)
     zipCode = db.Column(db.String(9), nullable=False)
     activate = db.Column(db.Enum(active), nullable=False)
-    idUser = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    tokenUser = db.Column(db.String(16), db.ForeignKey("user.token"), nullable=False)
     
 
     

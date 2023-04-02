@@ -16,4 +16,4 @@ class Cart(db.Model):
     idUser = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     idProduct = db.Column(db.Integer, db.ForeignKey("products.id"), nullable=False)
     idPayment = db.Column(db.Integer, db.ForeignKey("user_payments.id"), nullable=False)
-    token = db.Column(db.String(64), nullable=False, unique=True)
+    token = db.Column(db.String(16), nullable=False, unique=True)

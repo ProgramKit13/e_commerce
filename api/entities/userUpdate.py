@@ -1,5 +1,5 @@
-class User():
-    def __init__(self, firstName, lastName, email, password, cpf, genre, dateCreation, token, adminAccess, apiKey):
+class UserUpdate():
+    def __init__(self, firstName, lastName, email, password, cpf, genre, dateCreation, adminAccess):
         self.__firstName = firstName
         self.__lastName = lastName
         self.__email = email
@@ -7,9 +7,7 @@ class User():
         self.__cpf = cpf
         self.__genre = genre
         self.__dateCreation = dateCreation
-        self.__token = token
         self.__adminAccess = adminAccess
-        self.__apiKey = apiKey
 
     
     @property
@@ -73,27 +71,9 @@ class User():
 
     
     @property
-    def token(self):
-        return self.__token
-        
-    @token.setter
-    def token(self, token):
-        self.__token= token
-
-
-    @property
     def adminAccess(self):
         return self.__adminAccess
         
     @adminAccess.setter
     def adminAccess(self, adminAccess):
         self.__adminAccess= adminAccess
-
-    
-    @property
-    def apiKey(self):
-        return self.__apiKey
-        
-    @apiKey.setter
-    def apiKey(self, apiKey):
-        self.__apiKey= apiKey

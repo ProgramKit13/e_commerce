@@ -16,7 +16,7 @@ class Product(db.Model):
      description = db.Column(db.Text, nullable=True)
      datePurchase = db.Column(db.Date, nullable=False)
      dateShelf = db.Column(db.Date, nullable=False)
-     token = db.Column(db.String(64), unique=True, nullable=False)
+     token = db.Column(db.String(16), unique=True, nullable=False)
 
 
      cart = db.relationship(cart_models.Cart, backref="products", lazy="dynamic")

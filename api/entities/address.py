@@ -1,12 +1,12 @@
 class Address():
-    def __init__(self, neighborhood, street, number, state, city, zipCode, idUser, activate):
+    def __init__(self, neighborhood, street, number, state, city, zipCode, tokenUser, activate):
         self.__neighborhood = neighborhood
         self.__street = street
         self.__number = number
         self.__state = state
         self.__city = city
         self.__zipCode = zipCode
-        self.__idUser = idUser
+        self.__tokenUser = tokenUser
         self.__activate = activate
 
 
@@ -74,12 +74,12 @@ class Address():
 
     
     @property
-    def idUser(self):
-        return self.__idUser
+    def tokenUser(self):
+        return self.__tokenUser
         
-    @idUser.setter
-    def idUser(self, idUser):
-        self.__idUser= idUser
+    @tokenUser.setter
+    def tokenUser(self, tokenUser):
+        self.__tokenUser= tokenUser
 
 
 
