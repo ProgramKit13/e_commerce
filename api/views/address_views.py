@@ -8,7 +8,7 @@ from ..schemas .validators import validator
 import pycep_correios
 from pycep_correios.exceptions import InvalidCEP
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from ..decorators import admin_required, api_key_required
+from ..decorators import admin_required
 
 
 class RegisterAddress(Resource):

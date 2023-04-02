@@ -116,6 +116,25 @@ def admin_user_update(oldUser, newUser):
 ##################################################
 
 ##Delete
+def search_for_delete(id):
+    user = user_model.User.query.filter_by(id=id).first()
+    if user:
+        result = db.session.query(address_model.Address).join(user_model.User).filter(address_model.Address.tokenUser==user.token).all()
+        if result:
+            idBody = []
+            for i in result:
+                idBody.append({i})
+            return idBody
+        else:
+            return user
+    else:
+        msgm = 'Usuário não encontrado.'
+        return msgm
+
 def user_delete(id):
+    db.session.delete(id)
+    db.session.commit()
+
+def user_delete_adresses(id):
     db.session.delete(id)
     db.session.commit()

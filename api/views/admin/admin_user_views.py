@@ -9,7 +9,7 @@ from ...schemas.validators import validator
 import secrets
 from validate_docbr import CPF
 import uuid
-from ...decorators import admin_required, api_key_required
+from ...decorators import admin_required
 
 ###Register
 class adminRegister(Resource):
@@ -163,13 +163,20 @@ class UpgradeUser(Resource):
 
 ##Delete
 class DeleteUser(Resource):
+    @admin_required
     def delete(self, id):
-        user_db = user_service.get_user_id(id)
-        if user_db is None:
+        idAddress = user_service.search_for_delete(id)
+        idUser = user_service.get_user_id(id)
+        if idAddress and type(idAddress) == list:
+            for address in idAddress:
+                for values in address:
+                    user_service.user_delete_adresses(values)
+        if idUser is None:
             return make_response(jsonify("User not found"), 404)
-        
-        user_service.user_delete(user_db)
-        return make_response(jsonify("User deleted successfullyo!"), 204)
+        user_service.user_delete(idUser)
+        return make_response(jsonify("User deleted successfully!"), 204)
+
+
 
 
 api.add_resource(AdminUserList, '/admin&dashboard/user_list')
