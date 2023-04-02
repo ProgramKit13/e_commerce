@@ -9,7 +9,7 @@ from ..schemas.validators import validator
 import secrets
 from validate_docbr import CPF
 import uuid
-from ..decorators import admin_required, api_key_required
+
 
 class userRegister(Resource):
      def post(self):
@@ -70,4 +70,4 @@ class userRegister(Resource):
 
 
 
-api.add_resource(userRegister, '/user&register')
+api.add_resource(userRegister, '/register')

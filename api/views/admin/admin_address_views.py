@@ -162,10 +162,10 @@ class AdminDeleteAdresses(Resource):
 
 
 
-api.add_resource(AdminRegisterAdresses, '/admin&dashboard/address&register')
+api.add_resource(AdminRegisterAdresses, '/admin_dashboard/address_register')
 
-api.add_resource(AdminUpdateAdresses, '/admin&dashboard/update&address/<int:id>')
+api.add_resource(AdminUpdateAdresses, '/admin_dashboard/address_update/<int:id>')
 
-api.add_resource(AdminListAdresses, '/admin&dashboard/list&adresses')
+api.add_resource(AdminListAdresses, '/admin_dashboard/adresses_list')
 
-api.add_resource(AdminDeleteAdresses, '/admin&dashboard/delete&address/<int:id>')
+api.add_resource(AdminDeleteAdresses, '/admin_dashboard/address_delete/<int:id>')

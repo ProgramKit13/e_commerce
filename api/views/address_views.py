@@ -8,7 +8,7 @@ from ..schemas .validators import validator
 import pycep_correios
 from pycep_correios.exceptions import InvalidCEP
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from ..decorators import admin_required
+
 
 
 class RegisterAddress(Resource):
@@ -67,19 +67,22 @@ class RegisterAddress(Resource):
 
 class ListAdresses(Resource):
     @jwt_required()
-    def get(self, id):
-        adressesListAll = address_service.adressesList(id)
-        if adressesListAll is None or adressesListAll == []:
-            return make_response(jsonify("Sem endereço cadastrado"), 200)
-        return make_response(jsonify(adressesListAll), 200)
+    def get(self):
+        current_user = get_jwt_identity()
+        checkToken = user_service.get_user(current_user)
+        userAddress = address_service.user_address(checkToken)
+        if userAddress is None or userAddress == []:
+            return make_response(jsonify("No registered address."), 200)
+        return make_response(jsonify(userAddress), 200)
 
 
-
-class updateAddress(Resource):
+class UpdateAddress(Resource):
      @jwt_required()
      def put(self, id):
-        address_bd = address_service.address_list_id(id)
-        if address_bd is None:
+        current_user = get_jwt_identity()
+        checkToken = user_service.get_user(current_user)
+        address_bd = address_service.user_search_address_by_id(id, checkToken)
+        if address_bd is None or address_bd is False:
             return make_response(jsonify("Endreço não encontrado"), 404)
         ads = address_schema.AddressSchema()
         validate = ads.validate(request.json)
@@ -93,25 +96,31 @@ class updateAddress(Resource):
             city = request.json["city"]
             zipCode = request.json["zipCode"]
             activate = request.json["activate"]
-            idUser = request.json["idUser"]
-            new_address = address.Address(neighborhood=neighborhood, street=street, number=number, state=state, city=city, zipCode=zipCode, activate=activate, idUser=idUser)
+            tokenUser = checkToken
+            new_address = address.Address(neighborhood=neighborhood, street=street, number=number, state=state, city=city, zipCode=zipCode, activate=activate, tokenUser=tokenUser)
         
         address_service.address_update(address_bd, new_address)
-        msgm = 'Endereço atualizado com sucesso.'
-        return msgm
+        msgm = 'Address updated successfully.'
+        return make_response(jsonify(msgm), 201)
      
 
-
-class deleteAddress(Resource):
-    @admin_required
+class DeleteAddress(Resource):
+    @jwt_required()
     def delete(self, id):
-        address_db = address_service.address_list_id(id)
-        if address_db is None:
-            return make_response(jsonify("Endereço não encontrado"), 404)
-        address_service.address_delete(address_db)
-        return make_response(jsonify("Endreço excluído com sucesso!"), 204)
+        current_user = get_jwt_identity()
+        checkToken = user_service.get_user(current_user)
+        address_db = address_service.user_search_address_by_id(id, checkToken)
+        if address_db is None or address_db == False:
+            return make_response(jsonify("Address not found."), 404)
+        address_service.delete_address(address_db)
+        return make_response(jsonify("Address deleted successfully."), 204)
 
-api.add_resource(RegisterAddress, '/address&register')
-api.add_resource(updateAddress, '/update&address/<int:id>')
-api.add_resource(ListAdresses, '/search&adresses/<int:id>')
-api.add_resource(deleteAddress, '/delete&address/<int:id>')
+
+
+api.add_resource(RegisterAddress, '/address_register')
+
+api.add_resource(UpdateAddress, '/address_update/<int:id>')
+
+api.add_resource(ListAdresses, '/my_adresses')
+
+api.add_resource(DeleteAddress, '/address_delete/<int:id>')

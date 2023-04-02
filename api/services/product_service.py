@@ -25,28 +25,21 @@ def product_list_id(id):
 
 def searchProdName(name):
     search = "%{}%".format(name)
+    products = product_model.Product.query.filter(product_model.Product.prodName.like(search)).all()
     detailsProduct = []
-
-    def returnProduct(option):
-        for product in option:
-            detailsProduct.append({
-                "product_name":product.prodName,
-                "value_resale":product.valueResale,
-                "cust":product.cust,
-                "tax":product.tax,
-                "supplier":product.supplier,
-                "amount":product.qt,
-                "alter_resale":product.alterResale,
-                "discount":product.discount,
-                "date_purchase":product.datePurchase,
-                "dateShelf":product.dateShelf
-            })
-            
-    productsByName = product_model.Product.query.filter(product_model.Product.prodName.like(search)).all()
-
-    if productsByName != []:
-        returnProduct(productsByName)
-
+    for product in products:
+        detailsProduct.append({
+            "product_name":product.prodName,
+            "value_resale":product.valueResale,
+            "cust":product.cust,
+            "tax":product.tax,
+            "supplier":product.supplier,
+            "amount":product.qt,
+            "alter_resale":product.alterResale,
+            "discount":product.discount,
+            "date_purchase":product.datePurchase,
+            "dateShelf":product.dateShelf
+        })
     return detailsProduct
 ###################################
 
@@ -60,6 +53,11 @@ def product_update(oldData, newData):
     oldData.supplier = newData.supplier
     oldData.qt = newData.qt
     oldData.alterResale = newData.alterResale
+    oldData.discount = newData.discount
+    oldData.description = newData.description
+    oldData.datePurchase = newData.datePurchase
+    oldData.dateShelf = newData.dateShelf
+    oldData.token = newData.token
     db.session.commit()
 ####################################
 

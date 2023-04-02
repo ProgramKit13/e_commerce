@@ -179,12 +179,12 @@ class DeleteUser(Resource):
 
 
 
-api.add_resource(AdminUserList, '/admin&dashboard/user_list')
+api.add_resource(AdminUserList, '/admin_dashboard/list_user')
 
-api.add_resource(adminRegister, '/admin&dashboard/register_user')
+api.add_resource(adminRegister, '/admin_dashboard/user_register')
 
-api.add_resource(UserSearchByEmail, '/admin&dashboard/search_user_by_email/<string:email>')
+api.add_resource(UserSearchByEmail, '/admin_dashboard/user_search_by_email/<string:email>')
 
-api.add_resource(UpgradeUser, '/admin&dashboard/update_user/<int:id>')
+api.add_resource(UpgradeUser, '/admin_dashboard/user_update/<int:id>')
 
-api.add_resource(DeleteUser, '/admin&dashboard/delete_user/<int:id>')
+api.add_resource(DeleteUser, '/admin_dashboard/user_delete/<int:id>')

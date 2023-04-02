@@ -15,12 +15,38 @@ def address_register(address):
 def adresses_list():
     adresses = address_model.Address.query.all()
     return adresses
+
+
+def user_address(token):
+    adresses = address_model.Address.query.filter_by(tokenUser=token).all()
+    dictAddress = []
+    for address in adresses:
+        dictAddress.append({
+            "neighborhood":address.neighborhood,
+            "street":address.street,
+            "number":address.number,
+            "state":address.state,
+            "city":address.city,
+            "zipCode":address.zipCode,
+            "activate": str(address.activate)
+        })
+    return dictAddress
+
 ##########################################
 
 ##Search address
 def search_address_by_id(id):
     address = address_model.Address.query.filter_by(id=id).first()
     return address
+
+
+def user_search_address_by_id(id, token):
+    address = address_model.Address.query.filter_by(id=id).first()
+    print(id, token)
+    if address.tokenUser == token:
+        return address
+    else:
+        return False
 
 
 ##Delete address
