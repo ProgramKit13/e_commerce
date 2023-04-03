@@ -1,13 +1,14 @@
 class Carts():
-    def __init__(self, qt, value, confirm, totalDiscount, idProduct, idPayment, token):
+    def __init__(self, qt, value, confirm, totalDiscount, tokenProduct, tokenUser, tokenPayment, token):
         self.__qt = qt
         self.__value = value
         self.__confirm = confirm
         self.__totalDiscount = totalDiscount
-        self.__idProduct = idProduct
+        self.__tokenUser = tokenUser
         self.__qt = qt
-        self.__idPayment = idPayment
+        self.__tokenPayment = tokenPayment
         self.__token = token
+        self.__tokenProduct = tokenProduct
 
 
     
@@ -47,20 +48,20 @@ class Carts():
         self.__totalDiscount= totalDiscount
 
     @property
-    def idProduct(self):
-        return self.__idProduct
+    def tokenUser(self):
+        return self.__tokenUser
         
-    @idProduct.setter
-    def idProduct(self, idProduct):
-        self.__idProduct= idProduct
+    @tokenUser.setter
+    def tokenUser(self, tokenUser):
+        self.__tokenUser= tokenUser
 
     @property
-    def idPayment(self):
-        return self.__idPayment
+    def tokenPayment(self):
+        return self.__tokenPayment
         
-    @idPayment.setter
-    def idPayment(self, idPayment):
-        self.__idPayment= idPayment
+    @tokenPayment.setter
+    def tokenPayment(self, tokenPayment):
+        self.__tokenPayment= tokenPayment
     
     @property
     def token(self):
@@ -71,4 +72,11 @@ class Carts():
         self.__token= token
 
 
+    
+    @property
+    def tokenProduct(self):
+        return self.__tokenProduct
         
+    @tokenProduct.setter
+    def tokenProduct(self, tokenProduct):
+        self.__tokenProduct= tokenProduct

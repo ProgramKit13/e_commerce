@@ -11,7 +11,7 @@ from ...decorators import admin_required
 ##Product Register
 class AdminProdRegister(Resource):
     @admin_required
-    def get(self):
+    def post(self):
         errorTypes = {}
         verify = True 
         ps = prod_schema.ProdSchema()
@@ -89,20 +89,19 @@ class AdminProdSearchId(Resource):
     def get(self, id):
         product = product_service.product_list_id(id)
         if product is None:
-            return make_response(jsonify("Produto não encontrado"), 404)
+            return make_response(jsonify("Product not found"), 404)
         ps = prod_schema.ProdSchema()
         return make_response(ps.jsonify(product), 200)
 
 class AdminProdSearchFilter(Resource):
     @admin_required
     def post(self):
-        errorTypes = {}
-        verify = True
-        filterApply = []
         if 'prodName' in request.json:
             name = request.json['prodName']
-            teste = product_service.searchProdName(name)
-            return make_response(jsonify(teste))
+            list_filter = product_service.AdminsearchProduct(name)
+            if list_filter == []:
+                return make_response(jsonify('Product not found'), 404)
+            return make_response(jsonify(list_filter), 201)
         
  
 ##Update

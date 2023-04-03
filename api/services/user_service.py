@@ -5,8 +5,7 @@ from passlib.hash import pbkdf2_sha256
 
 ##register
 def user_register(user):
-    print(user)
-    user_bd = user_model.User(firstName=user.firstName, lastName=user.lastName, email=user.email, password=user.password, cpf=user.cpf, genre=user.genre, token=user.token, dateCreation=user.dateCreation, adminAccess=user.adminAccess, apiKey=user.apiKey)
+    user_bd = user_model.User(firstName=user.firstName, lastName=user.lastName, email=user.email, password=user.password, cpf=user.cpf, genre=user.genre, token=user.token, dateCreation=user.dateCreation, adminAccess=user.adminAccess, phone=user.phone)
     user_bd.encrypt_pass()
     db.session.add(user_bd)
     db.session.commit()
@@ -25,11 +24,14 @@ def get_user(id):
      token = user.token
      return token
 
+def get_user_token(token):
+    user = user_model.User.query.filter_by(token=token).first()
+    return user
+
 def user_email(email):
     return user_model.User.query.filter_by(email=email).first()
 
-def api_key(apiKey):
-    return user_model.User.query.filter_by(apiKey=apiKey).first()
+
 #################################################
 
 
@@ -50,11 +52,13 @@ def user_list_email(email):
                 "email": user.email,
                 "cpf":user.cpf,
                 "genre":str(user.genre),
+                "phone":user.phone
         })
         if result:
             for i in result:
                 userList.append({
                     "neighborhood":i.neighborhood,
+                    "complement":i.complement,
                     "street":i.street,
                     "number":i.number,
                     "state":i.state,
@@ -80,11 +84,13 @@ def user_list_cpf(cpf):
                 "email": user.email,
                 "cpf":user.cpf,
                 "genre":str(user.genre),
+                "phone":user.phone
         })
         if result:
             for i in result:
                 userList.append({
                     "neighborhood":i.neighborhood,
+                    "complement":i.complement,
                     "street":i.street,
                     "number":i.number,
                     "state":i.state,
@@ -102,7 +108,7 @@ def user_list_cpf(cpf):
 
 
 ##update
-def admin_user_update(oldUser, newUser):
+def user_update(oldUser, newUser):
     newUser.password = pbkdf2_sha256.hash(newUser.password)
     oldUser.firstName = newUser.firstName
     oldUser.lastName = newUser.lastName
@@ -112,6 +118,7 @@ def admin_user_update(oldUser, newUser):
     oldUser.genre = newUser.genre
     oldUser.password = newUser.password
     oldUser.dateCreation = newUser.dateCreation
+    oldUser.phone = newUser.phone
     db.session.commit()
 ##################################################
 

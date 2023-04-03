@@ -1,14 +1,17 @@
 class Supplier():
-    def __init__(self, name, email, uf, city, neighborhood, number, complement, cnpj, idProduct):
+    def __init__(self, name, email, state, city, neighborhood, street, number, complement, zipCode, cnpj, token, phone):
         self.__name = name
         self.__email = email
-        self.__uf = uf
+        self.__state = state
         self.__city = city
         self.__neighborhood = neighborhood
+        self.__street = street
         self.__number = number
         self.__complement = complement
-        self.__cpj = cnpj
-        self.__idProduct = idProduct
+        self.__zipCode = zipCode
+        self.__cnpj = cnpj
+        self.__token = token
+        self.__phone = phone
 
 
     
@@ -31,12 +34,12 @@ class Supplier():
 
     
     @property
-    def uf(self):
-        return self.__uf
+    def state(self):
+        return self.__state
         
-    @uf.setter
-    def uf(self, uf):
-        self.__uf= uf
+    @state.setter
+    def state(self, state):
+        self.__state= state
 
 
     @property
@@ -82,11 +85,40 @@ class Supplier():
 
     
     @property
-    def idProduct(self):
-        return self.__idProduct
+    def token(self):
+        return self.__token
         
-    @idProduct.setter
-    def idProduct(self, idProduct):
-        self.__idProduct= idProduct
+    @token.setter
+    def token(self, token):
+        self.__token= token
+
+    
+    @property
+    def phone(self):
+        return self.__phone
+        
+    @phone.setter
+    def phone(self, phone):
+        self.__phone= phone
+
+    
+    @property
+    def street(self):
+        return self.__street
+        
+    @street.setter
+    def street(self, street):
+        self.__street = street
+
+    
+    @property
+    def zipCode(self):
+        return self.__zipCode
+        
+    @zipCode.setter
+    def zipCode(self, zipCode):
+        self.__zipCode = zipCode
+
 
         
+

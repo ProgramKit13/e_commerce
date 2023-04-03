@@ -4,7 +4,7 @@ from api import db
 
 ##Register
 def address_register(address):
-    address_bd = address_model.Address(neighborhood=address.neighborhood, street=address.street, number=address.number, state=address.state, city=address.city, zipCode=address.zipCode, activate=address.activate, tokenUser=address.tokenUser)
+    address_bd = address_model.Address(neighborhood=address.neighborhood, street=address.street, number=address.number, state=address.state, city=address.city, zipCode=address.zipCode, activate=address.activate, tokenUser=address.tokenUser, complement=address.complement)
     db.session.add(address_bd)
     db.session.commit()
 
@@ -23,6 +23,7 @@ def user_address(token):
     for address in adresses:
         dictAddress.append({
             "neighborhood":address.neighborhood,
+            "complement":address.complement,
             "street":address.street,
             "number":address.number,
             "state":address.state,
@@ -42,7 +43,6 @@ def search_address_by_id(id):
 
 def user_search_address_by_id(id, token):
     address = address_model.Address.query.filter_by(id=id).first()
-    print(id, token)
     if address.tokenUser == token:
         return address
     else:
@@ -65,6 +65,7 @@ def address_update(oldAdress, newAddress):
     oldAdress.city = newAddress.city
     oldAdress.zipCode = newAddress.zipCode
     oldAdress.tokenUser = newAddress.tokenUser
+    oldAdress.complement = newAddress.complement
     db.session.commit()
 ##########################################
 

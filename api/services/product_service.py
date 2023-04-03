@@ -1,7 +1,6 @@
 from ..models import product_model
 from api import db
-
-
+from sqlalchemy import or_
 ##Register
 def prod_register(prod):
     prod_bd = product_model.Product(prodName=prod.prodName, valueResale=prod.valueResale, cust=prod.cust, tax=prod.tax, supplier=prod.supplier, qt=prod.qt, alterResale=prod.alterResale, discount=prod.discount, description=prod.description, datePurchase=prod.datePurchase, dateShelf=prod.dateShelf, token=prod.token)
@@ -23,9 +22,11 @@ def product_list_id(id):
     products = product_model.Product.query.filter_by(id=id).first()
     return products
 
-def searchProdName(name):
+
+
+def AdminsearchProduct(name):
     search = "%{}%".format(name)
-    products = product_model.Product.query.filter(product_model.Product.prodName.like(search)).all()
+    products = product_model.Product.query.filter(or_(product_model.Product.prodName.ilike(search), product_model.Product.description.ilike(search))).all()
     detailsProduct = []
     for product in products:
         detailsProduct.append({
@@ -37,8 +38,25 @@ def searchProdName(name):
             "amount":product.qt,
             "alter_resale":product.alterResale,
             "discount":product.discount,
+            "description":product.description,
             "date_purchase":product.datePurchase,
             "dateShelf":product.dateShelf
+        })
+    return detailsProduct
+
+
+
+def searchProduct(name):
+    search = "%{}%".format(name)
+    products = product_model.Product.query.filter(or_(product_model.Product.prodName.ilike(search), product_model.Product.description.ilike(search))).all()
+    detailsProduct = []
+    for product in products:
+        detailsProduct.append({
+            "name":product.prodName,
+            "value":product.valueResale,
+            "amount":product.qt,
+            "discount":product.discount,
+            "description":product.description
         })
     return detailsProduct
 ###################################

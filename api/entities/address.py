@@ -1,5 +1,5 @@
 class Address():
-    def __init__(self, neighborhood, street, number, state, city, zipCode, tokenUser, activate):
+    def __init__(self, neighborhood, street, number, state, city, zipCode, tokenUser, activate, complement):
         self.__neighborhood = neighborhood
         self.__street = street
         self.__number = number
@@ -8,6 +8,7 @@ class Address():
         self.__zipCode = zipCode
         self.__tokenUser = tokenUser
         self.__activate = activate
+        self.__complement = complement
 
 
     
@@ -80,6 +81,15 @@ class Address():
     @tokenUser.setter
     def tokenUser(self, tokenUser):
         self.__tokenUser= tokenUser
+
+    
+    @property
+    def complement(self):
+        return self.__complement
+        
+    @complement.setter
+    def complement(self, complement):
+        self.__complement = complement
 
 
 

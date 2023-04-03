@@ -32,32 +32,46 @@ class RegisterAddress(Resource):
             activate = request.json["activate"]
             tokenUser = checkToken
 
+        if "complement" in request.json:
+            complement = request.json['complement']
+        else:
+            complement = None
+
+        
+        if len(neighborhood) > 100:
+            verify = False
+            errorTypes['neighborhood'] = 'Field contains more than 100 characters.'
+        
+        if len(street) > 100:
+            verify = False
+            errorTypes['street'] = 'Field contains more than 100 characters.'
+
         if len(zipCode) == 9:
             try:
                 addressFind = pycep_correios.get_address_from_cep(zipCode)
             except InvalidCEP as exc:
                 verify = False
-                errorTypes['zipCode'] = 'Cep Inválido'
+                errorTypes['zipCode'] = 'Invalid zipcode.'
         else :
             verify = False
-            errorTypes['zipCode'] = 'CEP inválido.'
+            errorTypes['zipCode'] = 'Invalid zipcode.'
 
         if number.isdecimal() is not True:
             verify = False
-            errorTypes['number'] = 'Número inválido.'
+            errorTypes['number'] = 'Invalid date.'
         
         if state.isalpha() is not True or len(state) > 2:
             verify = False
-            errorTypes['state'] = 'Estado inválido.'
+            errorTypes['state'] = 'Invalid date'
         
         
         if activate != "1" and activate != "2" or activate.isdecimal() is not True:
             verify = False
-            errorTypes['activate'] = 'Status inválido.'
+            errorTypes['activate'] = 'Invalid status.'
             
 
         if verify == True:
-            new_address = address.Address(neighborhood=neighborhood, street=street, number=number, state=state, city=city, zipCode=zipCode, activate=activate, tokenUser=tokenUser)
+            new_address = address.Address(neighborhood=neighborhood, street=street, number=number, state=state, city=city, zipCode=zipCode, activate=activate, tokenUser=tokenUser, complement=complement)
             result = address_service.address_register(new_address)
             ref = cs.jsonify(result)
             return make_response(ref, 201)
@@ -79,11 +93,13 @@ class ListAdresses(Resource):
 class UpdateAddress(Resource):
      @jwt_required()
      def put(self, id):
+        errorTypes = {}
+        verify = True
         current_user = get_jwt_identity()
         checkToken = user_service.get_user(current_user)
         address_bd = address_service.user_search_address_by_id(id, checkToken)
         if address_bd is None or address_bd is False:
-            return make_response(jsonify("Endreço não encontrado"), 404)
+            return make_response(jsonify("Address not fount."), 404)
         ads = address_schema.AddressSchema()
         validate = ads.validate(request.json)
         if validate:
@@ -97,11 +113,43 @@ class UpdateAddress(Resource):
             zipCode = request.json["zipCode"]
             activate = request.json["activate"]
             tokenUser = checkToken
-            new_address = address.Address(neighborhood=neighborhood, street=street, number=number, state=state, city=city, zipCode=zipCode, activate=activate, tokenUser=tokenUser)
+
+
+        if "complement" in request.json:
+            complement = request.json['complement']
+        else:
+            complement = None
+
+        if len(zipCode) == 9:
+            try:
+                addressFind = pycep_correios.get_address_from_cep(zipCode)
+            except InvalidCEP as exc:
+                verify = False
+                errorTypes['zipCode'] = 'Invalid zipcode.'
+        else :
+            verify = False
+            errorTypes['zipCode'] = 'Invalid zipcode.'
+
+        if number.isdecimal() is not True:
+            verify = False
+            errorTypes['number'] = 'Invalid date.'
         
-        address_service.address_update(address_bd, new_address)
-        msgm = 'Address updated successfully.'
-        return make_response(jsonify(msgm), 201)
+        if state.isalpha() is not True or len(state) > 2:
+            verify = False
+            errorTypes['state'] = 'Invalid date.'
+        
+        
+        if activate != "1" and activate != "2" or activate.isdecimal() is not True:
+            verify = False
+            errorTypes['activate'] = 'Invalid status.'
+
+        if verify == True:
+            new_address = address.Address(neighborhood=neighborhood, street=street, number=number, state=state, city=city, zipCode=zipCode, activate=activate, tokenUser=tokenUser, complement=complement)
+            address_service.address_update(address_bd, new_address)
+            msgm = 'Address updated successfully.'
+            return make_response(jsonify(msgm), 201)
+        else:
+            return make_response(jsonify(errorTypes), 404)
      
 
 class DeleteAddress(Resource):

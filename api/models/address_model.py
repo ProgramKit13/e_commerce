@@ -11,8 +11,9 @@ class Address(db.Model):
     __tablename__="adresses"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False, unique=True)
     neighborhood = db.Column(db.String(100), nullable=False)
+    complement = db.Column(db.String(100), nullable=True)
     street = db.Column(db.String(100), nullable=False)
-    number = db.Column(db.String(9), nullable=False)
+    number = db.Column(db.Integer, nullable=False)
     state = db.Column(db.String(2), nullable=False)
     city = db.Column(db.String(100), nullable=False)
     zipCode = db.Column(db.String(9), nullable=False)

@@ -3,12 +3,11 @@ from datetime import datetime
 from api import api
 from ...schemas import user_schema
 from flask import request, make_response, jsonify
-from ...entities import user, userUpdate
+from ...entities import user
 from ...services import user_service
 from ...schemas.validators import validator
 import secrets
 from validate_docbr import CPF
-import uuid
 from ...decorators import admin_required
 
 ###Register
@@ -29,9 +28,10 @@ class adminRegister(Resource):
             cpf = request.json["cpf"]
             genre = request.json['genre']
             adminAccess = request.json['adminAccess']
+            phone = request.json['phone']
             dateCreation = datetime.today()
             token = secrets.token_hex(6)
-            apiKey = str(uuid.uuid4())
+
             validateEmail = validator.email_validate(email)
             if validateEmail is not True:
                 verify = False
@@ -62,7 +62,7 @@ class adminRegister(Resource):
                 errorTypes['genre'] = 'Invalid option.'
 
             if verify:
-                new_user = user.User(firstName=firstName, lastName=lastName, email=email, password=password, cpf=cpf, genre=genre, token=token, dateCreation=dateCreation, adminAccess=adminAccess, apiKey=apiKey)
+                new_user = user.User(firstName=firstName, lastName=lastName, email=email, password=password, cpf=cpf, genre=genre, token=token, dateCreation=dateCreation, adminAccess=adminAccess, phone=phone)
                 result = user_service.user_register(new_user)
                 ref = cs.jsonify(result)
                 return make_response(ref, 201)
@@ -119,8 +119,9 @@ class UpgradeUser(Resource):
             genre = request.json["genre"]
             adminAccess = request.json["adminAccess"]
             password = request.json["password"]
+            phone = request.json['phone']
             dateCreation = datetime.today()
-
+            token = user_db.token
 
             validateEmail = validator.email_validate(email)
             if validateEmail is not True:
@@ -151,9 +152,15 @@ class UpgradeUser(Resource):
                 verify = False
                 errorTypes['genre'] = 'Invalid option.'
 
+            if type(phone) != int:
+                verify = False
+                errorTypes['phone'] = 'Invalid format.'
+            else:
+                phone = str(request.json['phone'])
+
             if verify:
-                upgradeUser = userUpdate.UserUpdate(firstName=firstName, lastName=lastName, cpf=cpf, genre=genre, password=password, dateCreation=dateCreation, email=email, adminAccess=adminAccess)
-                user_service.admin_user_update(user_db, upgradeUser)
+                upgradeUser = user.User(firstName=firstName, lastName=lastName, cpf=cpf, genre=genre, password=password, dateCreation=dateCreation, email=email, adminAccess=adminAccess, token=token, phone=phone)
+                user_service.user_update(user_db, upgradeUser)
                 response = user_service.get_user_id(id)
                 return make_response(ps.jsonify(response), 200)
             else:

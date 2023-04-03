@@ -30,6 +30,11 @@ class AdminRegisterAdresses(Resource):
             activate = request.json["activate"]
             tokenUser = request.json["tokenUser"]
 
+        if "complement" in request.json:
+            complement = request.json['complement']
+        else:
+            complement = None
+
         if len(neighborhood) > 100:
             verify = False
             errorTypes['neighborhood'] = 'Field contains more than 100 characters.'
@@ -38,20 +43,16 @@ class AdminRegisterAdresses(Resource):
             verify = False
             errorTypes['street'] = 'Field contains more than 100 characters.'
 
-        
-        if type(number) != int:
-            verify = False
-            errorTypes['Invalid field.']
-        
+      
         if len(zipCode) == 9:
             try:
                 addressFind = pycep_correios.get_address_from_cep(zipCode)
             except InvalidCEP as exc:
                 verify = False
-                errorTypes['zipCode'] = 'Invalid field'
+                errorTypes['zipCode'] = 'Invalid zipcode'
         else :
             verify = False
-            errorTypes['zipCode'] = 'Invalid field.'
+            errorTypes['zipCode'] = 'Invalid zipcode.'
 
         
         if state.isalpha() is not True or len(state) > 2:
@@ -65,7 +66,7 @@ class AdminRegisterAdresses(Resource):
             
 
         if verify == True:
-            new_address = address.Address(neighborhood=neighborhood, street=street, number=number, state=state, city=city, zipCode=zipCode, activate=activate, tokenUser=tokenUser)
+            new_address = address.Address(neighborhood=neighborhood, street=street, number=number, state=state, city=city, zipCode=zipCode, activate=activate, tokenUser=tokenUser, complement=complement)
             result = address_service.address_register(new_address)
             ref = cs.jsonify(result)
             return make_response(ref, 201)
@@ -89,7 +90,7 @@ class AdminUpdateAdresses(Resource):
      def put(self, id):
         address_bd = address_service.search_address_by_id(id)
         if address_bd is None:
-            return make_response(jsonify("Endreço não encontrado"), 404)
+            return make_response(jsonify("Address not found."), 404)
         ads = address_schema.AddressSchema()
         validate = ads.validate(request.json)
         verify = True
@@ -106,6 +107,11 @@ class AdminUpdateAdresses(Resource):
             activate = request.json["activate"]
             tokenUser = address_bd.tokenUser
         
+        if "complement" in request.json:
+            complement = request.json['complement']
+        else:
+            complement = None
+
         if len(neighborhood) > 100:
             verify = False
             errorTypes['neighborhood'] = 'Field contains more than 100 characters.'
@@ -140,7 +146,7 @@ class AdminUpdateAdresses(Resource):
             errorTypes['activate'] = 'Invalid field.'
 
         if verify == True:
-            new_address = address.Address(neighborhood=neighborhood, street=street, number=number, state=state, city=city, zipCode=zipCode, activate=activate, tokenUser=tokenUser)
+            new_address = address.Address(neighborhood=neighborhood, street=street, number=number, state=state, city=city, zipCode=zipCode, activate=activate, tokenUser=tokenUser, complement=complement)
             address_service.address_update(address_bd, new_address)
             msgm = 'Address updated successfully.'
             return msgm

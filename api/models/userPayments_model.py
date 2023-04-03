@@ -20,10 +20,10 @@ class status(enum.Enum):
 class UserPayments(db.Model):
     __tablename__="user_payments"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False, unique=True)
+    userToken = db.Column(db.String(16), db.ForeignKey("user.token"), nullable=False)
     typePayment = db.Column(db.Enum(type), nullable=False)
     value = db.Column(db.Float, nullable=False)
     status = db.Column(db.Enum(status), nullable=False)
-    idUser = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     datePayment = db.Column(db.DateTime, nullable=False)
     dateStatus = db.Column(db.DateTime, nullable=False)
     token = db.Column(db.String(16), nullable=False, unique=True)
