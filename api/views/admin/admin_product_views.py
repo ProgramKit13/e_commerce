@@ -6,7 +6,7 @@ from ...entities import product
 from ...services import product_service
 import secrets
 from ...decorators import admin_required
-
+from ...schemas.validators import validator
 
 ##Product Register
 class AdminProdRegister(Resource):
@@ -32,6 +32,11 @@ class AdminProdRegister(Resource):
             dateShelf = request.json['dateShelf']
             token = secrets.token_hex(6)
 
+        prodNameValidate = validator.validate_name(prodName)
+        if prodNameValidate != True:
+            verify = False
+            errorTypes['prodName'] = prodNameValidate
+
         if type(valueResale) != float:
             verify = False
             errorTypes['valueResale'] = 'Invalid format.'
@@ -55,10 +60,15 @@ class AdminProdRegister(Resource):
                 verify = False
                 errorTypes['discount'] = 'Invalid format.'
         
-        if description:
-            if len(description) > 1024:
+        if description in request.json:
+            description = request.json['description']
+            validateDescription = validator.validate_description(description)
+            if validateDescription != True:
                 verify = False
-                errorTypes['text'] = 'Number of characters exceeds the allowed.'
+                errorTypes['description'] = validateDescription
+        else:
+            description = None
+
 
         if type(qt) != int:
             verify = False
@@ -131,6 +141,12 @@ class AdminUpdateProd(Resource):
             dateShelf = request.json['dateShelf']
             token = product_db.token
 
+        
+        prodNameValidate = validator.validate_name(prodName)
+        if prodNameValidate != True:
+            verify = False
+            errorTypes['prodName'] = prodNameValidate
+
         if type(valueResale) != float:
             verify = False
             errorTypes['valueResale'] = 'Invalid format.'
@@ -154,10 +170,15 @@ class AdminUpdateProd(Resource):
                 verify = False
                 errorTypes['discount'] = 'Invalid format.'
         
-        if description:
-            if len(description) > 1024:
+        if description in request.json:
+            description = request.json['description']
+            validateDescription = validator.validate_description(description)
+            if validateDescription != True:
                 verify = False
-                errorTypes['text'] = 'Number of characters exceeds the allowed.'
+                errorTypes['description'] = validateDescription
+        else:
+            description = None
+
 
         if type(qt) != int:
             verify = False

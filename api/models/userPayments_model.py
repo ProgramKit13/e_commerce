@@ -13,7 +13,7 @@ class type(enum.Enum):
 class status(enum.Enum):
     aprovade = 1
     reprovade = 2
-    pading = 3
+    panding = 3
     canceled = 4
     extoted = 5
 
@@ -21,14 +21,14 @@ class UserPayments(db.Model):
     __tablename__="user_payments"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False, unique=True)
     userToken = db.Column(db.String(16), db.ForeignKey("user.token"), nullable=False)
+    cartToken = db.Column(db.String(16), db.ForeignKey("carts.token"), nullable=False)
     typePayment = db.Column(db.Enum(type), nullable=False)
     value = db.Column(db.Float, nullable=False)
     status = db.Column(db.Enum(status), nullable=False)
     datePayment = db.Column(db.DateTime, nullable=False)
     dateStatus = db.Column(db.DateTime, nullable=False)
     token = db.Column(db.String(16), nullable=False, unique=True)
-
-    cart = db.relationship(cart_models.Cart, backref="user_payments", lazy="dynamic")
+    
     
 
     

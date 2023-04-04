@@ -1,11 +1,13 @@
 class Supplier():
-    def __init__(self, typePayment, value, status, userToken, datePayment, dateStatus):
+    def __init__(self, typePayment, value, status, userToken, datePayment, dateStatus, cartToken, token):
         self.__typePayment = typePayment
         self.__value = value
         self.__status = status
         self.__userToken = userToken
         self.__datePayment = datePayment
         self.__dateStatus = dateStatus
+        self.__cartToken = cartToken
+        self.__token= token
 
     
     @property
@@ -58,5 +60,35 @@ class Supplier():
     @dateStatus.setter
     def dateStatus(self, dateStatus):
         self.__dateStatus= dateStatus
+
+    
+    @property
+    def cartToken(self):
+        return self.__cartToken
+        
+    @cartToken.setter
+    def cartToken(self, cartToken):
+        self.__cartToken= cartToken
+
+    
+    @property
+    def cartToken(self):
+        return self.__cartToken
+        
+    @cartToken.setter
+    def cartToken(self, cartToken):
+        self.__cartToken= cartToken
+
+    
+    @property
+    def token(self):
+        return self.__token
+        
+    @token.setter
+    def token(self, token):
+        self.__token = token
+
+
+
 
         

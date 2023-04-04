@@ -15,5 +15,4 @@ class Cart(db.Model):
     totalDiscount = db.Column(db.Float(9), nullable=True)
     tokenUser = db.Column(db.String(16), db.ForeignKey("user.token"), nullable=False)
     tokenProduct = db.Column(db.String(16), db.ForeignKey("products.token"), nullable=False)
-    tokenPayment = db.Column(db.String(16), db.ForeignKey("user_payments.token"), nullable=False)
     token = db.Column(db.String(16), nullable=False, unique=True)

@@ -22,3 +22,27 @@ def supplier_list():
 def supplier_id(id):
     supplier = supplier_model.Supplier.query.filter_by(id=id).first()
     return supplier
+########################################
+
+##Update
+def supplier_update(oldSupplier, newSupplier):
+        oldSupplier.name = newSupplier.name
+        oldSupplier.email = newSupplier.email
+        oldSupplier.state = newSupplier.state
+        oldSupplier.city = newSupplier.city
+        oldSupplier.neighborhood = newSupplier.neighborhood
+        oldSupplier.street = newSupplier.street
+        oldSupplier.number = newSupplier.number
+        oldSupplier.complement = newSupplier.complement
+        oldSupplier.zipCode = newSupplier.zipCode
+        oldSupplier.cnpj = newSupplier.cnpj
+        oldSupplier.phone = newSupplier.phone
+        oldSupplier.token = newSupplier.token
+        db.session.commit()
+########################################
+
+
+##Delete
+def supplier_delete(supplier):
+    db.session.delete(supplier)
+    db.session.commit()

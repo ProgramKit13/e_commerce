@@ -29,40 +29,41 @@ class UserRegister(Resource):
             adminAccess = True
             dateCreation = datetime.today()
             token = secrets.token_hex(6)
-            validateEmail = validator.email_validate(email)
 
             if "phone" in request.json:
                 phone = request.json['phone']
             else:
                 phone = None
                 
+            validateEmail = validator.email_validate(email)
             if validateEmail is not True:
                 verify = False
-                errorTypes['email'] = 'E-mail inválido.'
+                errorTypes['email'] = 'Invalid email.'
 
             validatePass =validator.pass_validate(password)
             if validatePass == False:
                 verify = False
-                errorTypes['password'] = 'Senha fora dos critérios.'
+                errorTypes['password'] = 'Password out of standard.'
 
-            if firstName.isalpha() is not True:
+            validateFirstName = validator.validate_name(firstName)
+            if validateFirstName != True:
                 verify = False
-                errorTypes['firstName'] = 'Nome com espaços ou caracteres especiais.'
-
+                errorTypes['firstName'] = validateFirstName
             
-            if lastName.isalpha() is not True:
+            validateLastName = validator.validate_name(lastName)
+            if validateLastName != True:
                 verify = False
-                errorTypes['lastName'] = 'Nome com espaços ou caracteres especiais.'
+                errorTypes['lastName'] = validateLastName
 
             validateCPF = CPF()
             cpfValidate = validateCPF.validate(cpf)
             if cpfValidate == False:
                 verify = False
-                errorTypes['cpf'] = 'Cpf inválido.'
+                errorTypes['cpf'] = 'Invalid cpf.'
             
             if genre != '1' and genre != '2' and genre != '3':
                 verify = False
-                errorTypes['genre'] = 'Opção inválida.'
+                errorTypes['genre'] = 'Option invalid.'
 
 
             if verify:
@@ -85,53 +86,62 @@ class UserUpdate(Resource):
         cs = user_schema.UserSchema()
         validate = cs.validate(request.json)
         if validate:
-             return make_response(jsonify(validate), 400)
+            return make_response(jsonify(validate), 400)
         else:
-             firstName = request.json['firstName']
-             lastName = request.json['lastName']
-             email = request.json["email"]
-             password = request.json["password"]
-             cpf = request.json["cpf"]
-             genre = request.json['genre']
-             phone = request.json['phone']
-             adminAccess = False
-             dateCreation = datetime.today()
-             token = get_user.token
-             validateEmail = validator.email_validate(email)
-             if validateEmail is not True:
-                 verify = False
-                 errorTypes['email'] = 'E-mail inválido.'
+            firstName = request.json['firstName']
+            lastName = request.json['lastName']
+            email = request.json["email"]
+            password = request.json["password"]
+            cpf = request.json["cpf"]
+            genre = request.json['genre']
+            phone = request.json['phone']
+            adminAccess = False
+            dateCreation = datetime.today()
+            token = get_user.token
 
-             validatePass =validator.pass_validate(password)
-             if validatePass == False:
-                 verify = False
-                 errorTypes['password'] = 'Senha fora dos critérios.'
-             if firstName.isalpha() is not True:
-                 verify = False
-                 errorTypes['firstName'] = 'Nome com espaços ou caracteres especiais.'
+            if "phone" in request.json:
+                phone = request.json['phone']
+            else:
+                phone = None
+                
+            validateEmail = validator.email_validate(email)
+            if validateEmail is not True:
+                verify = False
+                errorTypes['email'] = 'Invalid email.'
 
+            validatePass =validator.pass_validate(password)
+            if validatePass == False:
+                verify = False
+                errorTypes['password'] = 'Password out of standard.'
+
+            validateFirstName = validator.validate_name(firstName)
+            if validateFirstName != True:
+                verify = False
+                errorTypes['firstName'] = validateFirstName
             
-             if lastName.isalpha() is not True:
-                 verify = False
-                 errorTypes['lastName'] = 'Nome com espaços ou caracteres especiais.'
+            validateLastName = validator.validate_name(lastName)
+            if validateLastName != True:
+                verify = False
+                errorTypes['lastName'] = validateLastName
 
-             validateCPF = CPF()
-             cpfValidate = validateCPF.validate(cpf)
-             if cpfValidate == False:
-                 verify = False
-                 errorTypes['cpf'] = 'Cpf inválido.'
-           
-             if genre != '1' and genre != '2' and genre != '3':
-                 verify = False
-                 errorTypes['genre'] = 'Opção inválida.'
+            validateCPF = CPF()
+            cpfValidate = validateCPF.validate(cpf)
+            if cpfValidate == False:
+                verify = False
+                errorTypes['cpf'] = 'Invalid cpf.'
+            
+            if genre != '1' and genre != '2' and genre != '3':
+                verify = False
+                errorTypes['genre'] = 'Option invalid.'
 
 
-             if verify:
+
+            if verify:
                     updateUser = user.User(firstName=firstName, lastName=lastName, email=email, password=password, cpf=cpf, genre=genre, token=token, dateCreation=dateCreation, adminAccess=adminAccess, phone=phone)
                     user_service.user_update(get_user,updateUser)
                     response = user_service.get_user_token(get_token)
                     return make_response(cs.jsonify(response), 200)
-             else:
+            else:
                  return make_response(jsonify(errorTypes), 404)
 
 

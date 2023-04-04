@@ -6,7 +6,7 @@ class Supplier_Schema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = cart_models.Cart
         load_instance = True
-        fields = ('id', 'qt', 'value', 'confirm', 'totalDiscount', 'tokenUser', 'tokenProduct','tokenPayments', 'idProduct')
+        fields = ('id', 'qt', 'value', 'confirm', 'totalDiscount', 'tokenUser', 'tokenProduct', 'token')
 
     qt = fields.Integer(required=True)
     value = fields.Float(required=True)
@@ -14,4 +14,4 @@ class Supplier_Schema(ma.SQLAlchemyAutoSchema):
     totalDiscount= fields.Float(required=True)
     tokenUser = fields.String(required=True)
     tokenProduct = fields.String(required=True)
-    tokenPayment = fields.String(required=True)
+    token = fields.String(required=False)

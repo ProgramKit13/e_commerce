@@ -30,39 +30,42 @@ class AdminRegisterAdresses(Resource):
             activate = request.json["activate"]
             tokenUser = request.json["tokenUser"]
 
+        
         if "complement" in request.json:
             complement = request.json['complement']
+            complementValidate = validator.validate_text(complement)
+            if complementValidate != True:
+                verify = False
+                errorTypes['complement'] = complementValidate
         else:
             complement = None
-
-        if len(neighborhood) > 100:
-            verify = False
-            errorTypes['neighborhood'] = 'Field contains more than 100 characters.'
         
-        if len(street) > 100:
+        neighborhoodValidate = validator.validate_text(request.json['neighborhood'])
+        if neighborhoodValidate != True:
             verify = False
-            errorTypes['street'] = 'Field contains more than 100 characters.'
-
-      
-        if len(zipCode) == 9:
-            try:
-                addressFind = pycep_correios.get_address_from_cep(zipCode)
-            except InvalidCEP as exc:
-                verify = False
-                errorTypes['zipCode'] = 'Invalid zipcode'
-        else :
-            verify = False
-            errorTypes['zipCode'] = 'Invalid zipcode.'
-
+            errorTypes['neighborhood'] = neighborhoodValidate
         
+        streetValidate = validator.validate_text(street)
+        if streetValidate != True:
+            verify = False
+            errorTypes['street'] = streetValidate
+       
+        cityValidate = validator.validate_text(city)
+        if cityValidate != True:
+            verify = False
+            errorTypes['city'] = cityValidate
+    
+       
+        # try:
+        #     addressFind = pycep_correios.get_address_from_cep(zipCode)
+        # except CEPNotFound as exc:
+        #         verify = False
+        #         errorTypes['zipCode'] = 'Invalid zipcode'
+        
+
         if state.isalpha() is not True or len(state) > 2:
             verify = False
             errorTypes['state'] = 'Invalid field.'
-        
-        
-        if activate != "1" and activate != "2" or activate.isdecimal() is not True:
-            verify = False
-            errorTypes['activate'] = 'Invalid field.'
             
 
         if verify == True:
@@ -109,41 +112,39 @@ class AdminUpdateAdresses(Resource):
         
         if "complement" in request.json:
             complement = request.json['complement']
+            complementValidate = validator.validate_text(complement)
+            if complementValidate != True:
+                verify = False
+                errorTypes['complement'] = complementValidate
         else:
             complement = None
+        
+        neighborhoodValidate = validator.validate_text(request.json['neighborhood'])
+        if neighborhoodValidate != True:
+            verify = False
+            errorTypes['neighborhood'] = neighborhoodValidate
+        
+        streetValidate = validator.validate_text(street)
+        if streetValidate != True:
+            verify = False
+            errorTypes['street'] = streetValidate
+       
+        cityValidate = validator.validate_text(city)
+        if cityValidate != True:
+            verify = False
+            errorTypes['city'] = cityValidate
+    
+       
+        # try:
+        #     addressFind = pycep_correios.get_address_from_cep(zipCode)
+        # except CEPNotFound as exc:
+        #         verify = False
+        #         errorTypes['zipCode'] = 'Invalid zipcode'
+        
 
-        if len(neighborhood) > 100:
-            verify = False
-            errorTypes['neighborhood'] = 'Field contains more than 100 characters.'
-        
-        if len(street) > 100:
-            verify = False
-            errorTypes['street'] = 'Field contains more than 100 characters.'
-
-        
-        if type(number) != int:
-            verify = False
-            errorTypes['Invalid field.']
-        
-        if len(zipCode) == 9:
-            try:
-                addressFind = pycep_correios.get_address_from_cep(zipCode)
-            except InvalidCEP as exc:
-                verify = False
-                errorTypes['zipCode'] = 'Invalid field'
-        else :
-            verify = False
-            errorTypes['zipCode'] = 'Invalid field.'
-
-        
         if state.isalpha() is not True or len(state) > 2:
             verify = False
             errorTypes['state'] = 'Invalid field.'
-        
-        
-        if activate != "1" and activate != "2" or activate.isdecimal() is not True:
-            verify = False
-            errorTypes['activate'] = 'Invalid field.'
 
         if verify == True:
             new_address = address.Address(neighborhood=neighborhood, street=street, number=number, state=state, city=city, zipCode=zipCode, activate=activate, tokenUser=tokenUser, complement=complement)
