@@ -2,16 +2,16 @@ from api import ma
 from ..models import cart_models
 from marshmallow import fields
 
-class Supplier_Schema(ma.SQLAlchemyAutoSchema):
+class CartSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = cart_models.Cart
         load_instance = True
-        fields = ('id', 'qt', 'value', 'confirm', 'totalDiscount', 'tokenUser', 'tokenProduct', 'token')
+        fields = ('id', 'tokenUser', 'token', 'discountTotal', 'valueTtotal', 'openCart', 'status')
 
-    qt = fields.Integer(required=True)
-    value = fields.Float(required=True)
-    confirm = fields.Enum(required=True)     
-    totalDiscount= fields.Float(required=True)
+    id = fields.Integer(dump_only=True)
     tokenUser = fields.String(required=True)
-    tokenProduct = fields.String(required=True)
-    token = fields.String(required=False)
+    token = fields.String(required=True)
+    discountTotal = fields.Float(required=True)
+    valueTtotal = fields.Float(required=True)
+    openCart = fields.Boolean(required=True)
+    status = fields.String(required=True)

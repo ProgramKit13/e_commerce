@@ -27,7 +27,7 @@ class UserPayments(db.Model):
     status = db.Column(db.Enum(status), nullable=False)
     datePayment = db.Column(db.DateTime, nullable=False)
     dateStatus = db.Column(db.DateTime, nullable=False)
-    token = db.Column(db.String(16), nullable=False, unique=True)
+    token = db.Column(db.String(64), nullable=False, unique=True)
     
     
 

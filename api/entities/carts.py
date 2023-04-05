@@ -1,74 +1,52 @@
-class Carts():
-    def __init__(self, qt, value, confirm, totalDiscount, tokenProduct, tokenUser, token):
-        self.__qt = qt
-        self.__value = value
-        self.__confirm = confirm
-        self.__totalDiscount = totalDiscount
-        self.__tokenUser = tokenUser
-        self.__qt = qt
-        self.__token = token
-        self.__tokenProduct = tokenProduct
-
-
+class Cart:
+    def __init__(self, id, tokenUser, token, discountTotal, valueTtotal, openCart, status):
+        self.id = id
+        self.tokenUser = tokenUser
+        self.token = token
+        self.discountTotal = discountTotal
+        self.valueTtotal = valueTtotal
+        self.openCart = openCart
+        self.status = status
     
-    @property
-    def qt(self):
-        return self.__qt
-        
-    @qt.setter
-    def qt(self, qt):
-        self.__qt = qt
-
-        
-    @property
-    def value(self):
-        return self.__value
-        
-    @value.setter
-    def value(self, value):
-        self.__value = value
-
-    
-    @property
-    def confirm(self):
-        return self.__confirm
-        
-    @confirm.setter
-    def confirm(self, confirm):
-        self.__confirm= confirm
-
-    
-    @property
-    def totalDiscount(self):
-        return self.__totalDiscount
-        
-    @totalDiscount.setter
-    def totalDiscount(self, totalDiscount):
-        self.__totalDiscount= totalDiscount
-
     @property
     def tokenUser(self):
         return self.__tokenUser
         
     @tokenUser.setter
-    def tokenUser(self, tokenUser):
-        self.__tokenUser= tokenUser
-
-
+    def prodName(self, tokenUser):
+        self.__tokenUser = tokenUser
+    
     @property
     def token(self):
         return self.__token
-        
     @token.setter
     def token(self, token):
-        self.__token= token
-
-
+        self.__token = token
     
     @property
-    def tokenProduct(self):
-        return self.__tokenProduct
-        
-    @tokenProduct.setter
-    def tokenProduct(self, tokenProduct):
-        self.__tokenProduct= tokenProduct
+    def discountTotal(self):
+        return self.__discountTotal
+    @discountTotal.setter
+    def discountTotal(self, discountTotal):
+        self.__discountTotal = discountTotal
+
+    @property
+    def valueTtotal(self):
+        return self.__valueTtotal
+    @valueTtotal.setter
+    def valueTtotal(self, valueTtotal):
+        self.__valueTtotal = valueTtotal
+
+    @property
+    def openCart(self):
+        return self.__openCart
+    @openCart.setter
+    def openCart(self, openCart):
+        self.__openCart = openCart
+
+    @property
+    def status(self):
+        return self.__status
+    @status.setter
+    def status(self, status):
+        self.__status = status

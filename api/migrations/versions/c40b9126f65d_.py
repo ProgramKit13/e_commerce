@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 90564849672e
+Revision ID: c40b9126f65d
 Revises: 
-Create Date: 2023-04-03 12:59:43.186215
+Create Date: 2023-04-04 21:08:06.096803
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '90564849672e'
+revision = 'c40b9126f65d'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -40,12 +40,14 @@ def upgrade():
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('name', sa.String(length=50), nullable=False),
     sa.Column('email', sa.String(length=50), nullable=False),
-    sa.Column('uf', sa.String(length=2), nullable=False),
+    sa.Column('state', sa.String(length=2), nullable=False),
     sa.Column('city', sa.String(length=50), nullable=False),
     sa.Column('neighborhood', sa.String(length=50), nullable=False),
+    sa.Column('street', sa.String(length=100), nullable=False),
     sa.Column('number', sa.Integer(), nullable=False),
-    sa.Column('complement', sa.String(length=100), nullable=False),
-    sa.Column('cnpj', sa.String(length=14), nullable=False),
+    sa.Column('complement', sa.String(length=100), nullable=True),
+    sa.Column('zipCode', sa.String(length=9), nullable=False),
+    sa.Column('cnpj', sa.String(length=18), nullable=False),
     sa.Column('phone', sa.String(length=13), nullable=True),
     sa.Column('token', sa.String(length=16), nullable=False),
     sa.PrimaryKeyConstraint('id'),
@@ -83,33 +85,47 @@ def upgrade():
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('id')
     )
-    op.create_table('user_payments',
+    op.create_table('carts',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
-    sa.Column('userToken', sa.String(length=16), nullable=False),
-    sa.Column('typePayment', sa.Enum('debit', 'credt', 'ticket', 'pix', name='type'), nullable=False),
-    sa.Column('value', sa.Float(), nullable=False),
-    sa.Column('status', sa.Enum('aprovade', 'reprovade', 'pading', 'canceled', 'extoted', name='status'), nullable=False),
-    sa.Column('datePayment', sa.DateTime(), nullable=False),
-    sa.Column('dateStatus', sa.DateTime(), nullable=False),
-    sa.Column('token', sa.String(length=16), nullable=False),
-    sa.ForeignKeyConstraint(['userToken'], ['user.token'], ),
+    sa.Column('tokenUser', sa.String(length=16), nullable=False),
+    sa.Column('token', sa.String(length=64), nullable=False),
+    sa.Column('discountTotal', sa.Float(precision=9), nullable=True),
+    sa.Column('valueTtotal', sa.Float(precision=9), nullable=True),
+    sa.Column('openCart', sa.Boolean(), nullable=False),
+    sa.Column('status', sa.Enum('confirmed', 'panding', 'canceled', name='status'), nullable=False),
+    sa.ForeignKeyConstraint(['tokenUser'], ['user.token'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('id'),
     sa.UniqueConstraint('token')
     )
-    op.create_table('carts',
+    op.create_table('service_order',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
-    sa.Column('qt', sa.Integer(), nullable=False),
-    sa.Column('value', sa.Float(), nullable=False),
-    sa.Column('confirm', sa.Enum('confirmation', 'canceled', name='confirmationoption'), nullable=False),
-    sa.Column('totalDiscount', sa.Float(precision=9), nullable=True),
-    sa.Column('tokenUser', sa.String(length=16), nullable=False),
     sa.Column('tokenProduct', sa.String(length=16), nullable=False),
-    sa.Column('tokenPayment', sa.String(length=16), nullable=False),
-    sa.Column('token', sa.String(length=16), nullable=False),
-    sa.ForeignKeyConstraint(['tokenPayment'], ['user_payments.token'], ),
+    sa.Column('tokenUser', sa.String(length=16), nullable=False),
+    sa.Column('tokenCart', sa.String(length=64), nullable=False),
+    sa.Column('token', sa.String(length=64), nullable=False),
+    sa.Column('qt', sa.Integer(), nullable=False),
+    sa.Column('value', sa.Float(precision=9), nullable=False),
+    sa.Column('discount', sa.Float(precision=9), nullable=True),
+    sa.ForeignKeyConstraint(['tokenCart'], ['carts.token'], ),
     sa.ForeignKeyConstraint(['tokenProduct'], ['products.token'], ),
     sa.ForeignKeyConstraint(['tokenUser'], ['user.token'], ),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('id'),
+    sa.UniqueConstraint('token')
+    )
+    op.create_table('user_payments',
+    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
+    sa.Column('userToken', sa.String(length=16), nullable=False),
+    sa.Column('cartToken', sa.String(length=16), nullable=False),
+    sa.Column('typePayment', sa.Enum('debit', 'credt', 'ticket', 'pix', name='type'), nullable=False),
+    sa.Column('value', sa.Float(), nullable=False),
+    sa.Column('status', sa.Enum('aprovade', 'reprovade', 'panding', 'canceled', 'extoted', name='status'), nullable=False),
+    sa.Column('datePayment', sa.DateTime(), nullable=False),
+    sa.Column('dateStatus', sa.DateTime(), nullable=False),
+    sa.Column('token', sa.String(length=64), nullable=False),
+    sa.ForeignKeyConstraint(['cartToken'], ['carts.token'], ),
+    sa.ForeignKeyConstraint(['userToken'], ['user.token'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('id'),
     sa.UniqueConstraint('token')
@@ -119,8 +135,9 @@ def upgrade():
 
 def downgrade():
     # ### commands auto generated by Alembic - please adjust! ###
-    op.drop_table('carts')
     op.drop_table('user_payments')
+    op.drop_table('service_order')
+    op.drop_table('carts')
     op.drop_table('adresses')
     op.drop_table('user')
     op.drop_table('suppliers')

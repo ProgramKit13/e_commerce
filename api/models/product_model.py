@@ -1,5 +1,5 @@
 from api import db
-from ..models import cart_models
+from ..models import order_model
 
 
 class Product(db.Model):
@@ -18,8 +18,7 @@ class Product(db.Model):
      dateShelf = db.Column(db.Date, nullable=False)
      token = db.Column(db.String(16), unique=True, nullable=False)
 
-
-     cart = db.relationship(cart_models.Cart, backref="products", lazy="dynamic")
+     orders = db.relationship('Order', backref='product', lazy='dynamic')
 
 
 
