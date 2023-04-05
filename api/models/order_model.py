@@ -8,6 +8,6 @@ class Order(db.Model):
     tokenCart = db.Column(db.String(64), db.ForeignKey("carts.token"), nullable=False)
     token = db.Column(db.String(64), nullable=False, unique=True)
     qt = db.Column(db.Integer, nullable=False)
-    value = db.Column(db.Float(9), nullable=False)
-    discount = db.Column(db.Float(9), nullable=True)
+    value = db.Column(db.db.Numeric(precision=8, scale=2), nullable=False)
+    discount = db.Column(db.Float(), nullable=True)
 

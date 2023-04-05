@@ -1,7 +1,9 @@
 from api import db
 import enum
 from sqlalchemy import Enum
-from ..models import address_model, userPayments_model, cart_models, order_model
+
+from . import cart_model
+from ..models import address_model, userPayments_model
 from passlib.hash import pbkdf2_sha256
 
 class genre(enum.Enum):
@@ -26,7 +28,7 @@ class User(db.Model):
     adresses = db.relationship(address_model.Address, backref="user", lazy="dynamic")
     payments = db.relationship(userPayments_model.UserPayments, backref="user", lazy="dynamic")
     orders = db.relationship('Order', backref='user', lazy='dynamic')
-    cart = db.relationship(cart_models.Cart, backref="user", lazy="dynamic")
+    cart = db.relationship(cart_model.Cart, backref="user", lazy="dynamic")
 
 
     def encrypt_pass(self):

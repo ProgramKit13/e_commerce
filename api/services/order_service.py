@@ -6,3 +6,11 @@ def create_order(tokenProduct, tokenUser, tokenCart, token, qt, discount, value)
     db.session.add(order)
     db.session.commit()
     return order
+
+
+def get_total_qty_by_cart(tokenCart):
+    orders = order_model.Order.query.filter_by(tokenCart=tokenCart).all()
+    total = 0
+    for order in orders:
+        total += order.qt
+    return total

@@ -1,10 +1,10 @@
 from api import ma
-from ..models import cart_models
+from ..models import cart_model
 from marshmallow import fields
 
 class CartSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
-        model = cart_models.Cart
+        model = cart_model.Cart
         load_instance = True
         fields = ('id', 'tokenUser', 'token', 'discountTotal', 'valueTtotal', 'openCart', 'status')
 

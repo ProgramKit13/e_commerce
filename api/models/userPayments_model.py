@@ -1,5 +1,5 @@
 from api import db
-from ..models import cart_models
+from . import cart_model
 import enum
 from sqlalchemy import Enum
 

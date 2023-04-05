@@ -1,64 +1,58 @@
 from flask_restful import Resource
 from api import api
 from flask import request, make_response, jsonify
-from ..schemas .validators import validator
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from ..services import user_service, product_service, cart_service, order_service
-from ..schemas import carts_schema, product_schema,  user_schema, order_schema
 import secrets
 
 class OpenCart(Resource):
     @jwt_required()
     def post(self):
-        verify = True
-        errorTypes = {}
         current_user = get_jwt_identity()
-        checkToken = user_service.get_user(current_user)
-        tokenUser = checkToken
-        if tokenUser is None:
+        user = user_service.get_user(current_user)
+        if not user:
             return make_response(jsonify({"message": "User not found"}), 404)
+        
+        cart = cart_service.get_cart_by_token_and_status(user)
+        if not cart:
+            cart = cart_service.create_cart(user, secrets.token_hex(32))
+
+        amount = request.json.get('amount')
+        tokenProduct = request.json.get('tokenProduct')
+        product = product_service.product_list_token(tokenProduct)
+
+        errorTypes = {}
+        if not product:
+            errorTypes['product'] = 'Product not found.'
+        elif product.qt < amount:
+            errorTypes['amount'] = 'Amount not available.'
+
+        if product.discount is not None and (product.discount > 100 or product.discount < 0):
+            errorTypes['discount'] = 'Discount not available.'
+        elif product.discount is not None:
+            total_cart_qty = order_service.get_total_qty_by_cart(cart.token)
+            discount = float(product.valueResale) * product.discount * total_cart_qty
+            value = float(product.valueResale) * amount - discount
+            if len(str(value)) >= 10:
+                errorTypes['value'] = 'Value not available.'
         else:
-            cart = cart_service.get_cart_by_token_and_status(tokenUser)
-            if cart is None:
-                tokenCart = secrets.token_hex(64)
-                tokenOrder = secrets.token_hex(64)
-                value = request.json['value']
-                amount = request.json['amount']
-                discount = request.json['discount']
-                tokenProduct = request.json['tokenProduct']
+            value = float(product.valueResale) * amount
 
-                getProductByToken = product_service.product_list_token(tokenProduct)
+        if errorTypes:
+            return make_response(jsonify(errorTypes), 400)
 
-                if getProductByToken is None:
-                    verify = False
-                    errorTypes['amount'] = 'Product not found.'
-                
-                if getProductByToken.qt < amount:
-                    verify = False
-                    errorTypes['amount'] = 'Amount not available.'
-
-                if "discount" in request.json:
-                    discount = request.json['discount']
-                    if discount != getProductByToken.discount:
-                        verify = False
-                        errorTypes['discount'] = 'Discount not available.'
-                    if discount > value:
-                        verify = False
-                        errorTypes['discount'] = 'Discount not available.'
-
-                if value != getProductByToken.valueResale:
-                    verify = False
-                    errorTypes['value'] = 'Value not available.'
-                
+        new_order = order_service.create_order(
+            tokenProduct=tokenProduct,
+            tokenUser=user,
+            tokenCart=cart.token,
+            token=secrets.token_hex(32),
+            qt=amount,
+            discount=discount if 'discount' in locals() else 0,
+            value=value,
+        )
+        return make_response(jsonify('Produto adicionado com sucesso.'), 201)
+        
 
 
-                if verify:
-                    new_cart = cart_service.create_cart(tokenUser, tokenCart)
+api.add_resource(OpenCart, '/openCart')
 
-                    new_order = order_service.create_order(tokenProduct=tokenProduct, tokenUser=tokenUser, tokenCart=tokenCart, token=tokenOrder, qt=amount, discount=discount, value=value)
-
-                    return make_response(jsonify(new_order, new_cart), 201)
-                else:
-                    return make_response(jsonify(errorTypes), 400)
-            else:
-                return make_response(jsonify({"message": "Cart already open"}), 400)
