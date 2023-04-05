@@ -22,6 +22,10 @@ def product_list_id(id):
     products = product_model.Product.query.filter_by(id=id).first()
     return products
 
+def product_list_token(token):
+    product = product_model.Product.query.filter_by(token=token).first()
+    return product
+
 
 
 def AdminsearchProduct(name):
@@ -56,7 +60,8 @@ def searchProduct(name):
             "value":product.valueResale,
             "amount":product.qt,
             "discount":product.discount,
-            "description":product.description
+            "description":product.description,
+            "tokenProduct":product.token,
         })
     return detailsProduct
 ###################################
