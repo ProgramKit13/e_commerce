@@ -39,9 +39,16 @@ class OpenCart(Resource):
 
                 if "discount" in request.json:
                     discount = request.json['discount']
+                    if discount != getProductByToken.discount:
+                        verify = False
+                        errorTypes['discount'] = 'Discount not available.'
                     if discount > value:
                         verify = False
                         errorTypes['discount'] = 'Discount not available.'
+
+                if value != getProductByToken.valueResale:
+                    verify = False
+                    errorTypes['value'] = 'Value not available.'
                 
 
 
