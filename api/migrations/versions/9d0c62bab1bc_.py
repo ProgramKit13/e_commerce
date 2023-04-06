@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: c40b9126f65d
+Revision ID: 9d0c62bab1bc
 Revises: 
-Create Date: 2023-04-04 21:08:06.096803
+Create Date: 2023-04-05 20:34:13.383453
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'c40b9126f65d'
+revision = '9d0c62bab1bc'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -21,13 +21,13 @@ def upgrade():
     op.create_table('products',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('prodName', sa.String(length=100), nullable=False),
-    sa.Column('valueResale', sa.Float(precision=9), nullable=False),
-    sa.Column('cust', sa.Float(precision=9), nullable=False),
-    sa.Column('tax', sa.Float(precision=9), nullable=True),
+    sa.Column('valueResale', sa.Numeric(precision=8, scale=2), nullable=False),
+    sa.Column('cust', sa.Numeric(precision=8, scale=2), nullable=False),
+    sa.Column('tax', sa.Numeric(precision=8, scale=2), nullable=False),
     sa.Column('supplier', sa.String(length=100), nullable=True),
     sa.Column('qt', sa.Integer(), nullable=False),
-    sa.Column('alterResale', sa.Float(precision=9), nullable=True),
-    sa.Column('discount', sa.Float(precision=9), nullable=True),
+    sa.Column('alterResale', sa.Numeric(precision=8, scale=2), nullable=False),
+    sa.Column('discount', sa.Float(precision=2), nullable=True),
     sa.Column('description', sa.Text(), nullable=True),
     sa.Column('datePurchase', sa.Date(), nullable=False),
     sa.Column('dateShelf', sa.Date(), nullable=False),
@@ -89,8 +89,8 @@ def upgrade():
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('tokenUser', sa.String(length=16), nullable=False),
     sa.Column('token', sa.String(length=64), nullable=False),
-    sa.Column('discountTotal', sa.Float(precision=9), nullable=True),
-    sa.Column('valueTtotal', sa.Float(precision=9), nullable=True),
+    sa.Column('discountTotal', sa.Float(precision=2), nullable=True),
+    sa.Column('valueTtotal', sa.Numeric(precision=8, scale=2), nullable=True),
     sa.Column('openCart', sa.Boolean(), nullable=False),
     sa.Column('status', sa.Enum('confirmed', 'panding', 'canceled', name='status'), nullable=False),
     sa.ForeignKeyConstraint(['tokenUser'], ['user.token'], ),
@@ -105,8 +105,8 @@ def upgrade():
     sa.Column('tokenCart', sa.String(length=64), nullable=False),
     sa.Column('token', sa.String(length=64), nullable=False),
     sa.Column('qt', sa.Integer(), nullable=False),
-    sa.Column('value', sa.Float(precision=9), nullable=False),
-    sa.Column('discount', sa.Float(precision=9), nullable=True),
+    sa.Column('value', sa.Numeric(precision=8, scale=2), nullable=False),
+    sa.Column('discount', sa.Float(), nullable=True),
     sa.ForeignKeyConstraint(['tokenCart'], ['carts.token'], ),
     sa.ForeignKeyConstraint(['tokenProduct'], ['products.token'], ),
     sa.ForeignKeyConstraint(['tokenUser'], ['user.token'], ),

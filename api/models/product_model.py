@@ -12,7 +12,7 @@ class Product(db.Model):
      supplier = db.Column(db.String(100), nullable=True)
      qt = db.Column(db.Integer, nullable=False)
      alterResale = db.Column(db.Numeric(precision=8, scale=2), nullable=False)
-     discount = db.Column(db.Float(precision=2), nullable=True)
+     discount = db.Column(db.Numeric(precision=4, scale=2), nullable=True)
      description = db.Column(db.Text, nullable=True)
      datePurchase = db.Column(db.Date, nullable=False)
      dateShelf = db.Column(db.Date, nullable=False)

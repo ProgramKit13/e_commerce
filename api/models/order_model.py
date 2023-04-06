@@ -9,5 +9,5 @@ class Order(db.Model):
     token = db.Column(db.String(64), nullable=False, unique=True)
     qt = db.Column(db.Integer, nullable=False)
     value = db.Column(db.db.Numeric(precision=8, scale=2), nullable=False)
-    discount = db.Column(db.Float(), nullable=True)
+    discount = db.Column(db.Numeric(precision=4, scale=2), nullable=True)
 

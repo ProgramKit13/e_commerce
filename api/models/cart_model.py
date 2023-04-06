@@ -15,7 +15,7 @@ class Cart(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False, unique=True)
     tokenUser = db.Column(db.String(16), db.ForeignKey("user.token"), nullable=False)
     token = db.Column(db.String(64), nullable=False, unique=True)
-    discountTotal = db.Column(db.Float(precision=2), nullable=True)
+    discountTotal = db.Column(db.Numeric(precision=4, scale=2), nullable=True)
     valueTtotal = db.Column(db.Numeric(precision=8, scale=2), nullable=True)
     openCart = db.Column(db.Boolean, nullable=False, default=False)
     status = db.Column(db.Enum(status), nullable=False)
