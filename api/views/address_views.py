@@ -6,7 +6,7 @@ from ..entities import address
 from ..services import address_service, user_service
 from ..schemas .validators import validator
 import pycep_correios
-from pycep_correios.exceptions import InvalidCEP
+from pycep_correios.exceptions import InvalidCEP, CEPNotFound
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 
@@ -34,6 +34,10 @@ class RegisterAddress(Resource):
 
         if "complement" in request.json:
             complement = request.json['complement']
+            validateComplament = validator.validate_name(complement)
+            if validateComplament is not True:
+                verify = False
+                errorTypes['complement'] = 'Invalid complement.'
         else:
             complement = None
 
@@ -46,15 +50,17 @@ class RegisterAddress(Resource):
             verify = False
             errorTypes['street'] = 'Field contains more than 100 characters.'
 
-        if len(zipCode) == 9:
+        
+        if not zipCode.isnumeric() or len(zipCode) != 8:
+            verify = False
+            errorTypes['zipCode'] = 'Invalid zipcode'
+
+        if verify == True:
             try:
                 addressFind = pycep_correios.get_address_from_cep(zipCode)
-            except InvalidCEP as exc:
+            except CEPNotFound as exc:
                 verify = False
-                errorTypes['zipCode'] = 'Invalid zipcode.'
-        else :
-            verify = False
-            errorTypes['zipCode'] = 'Invalid zipcode.'
+                errorTypes['zipCode'] = 'Invalid zipcode'
 
         if number.isdecimal() is not True:
             verify = False
@@ -117,18 +123,24 @@ class UpdateAddress(Resource):
 
         if "complement" in request.json:
             complement = request.json['complement']
+            validateComplament = validator.validate_name(complement)
+            if validateComplament is not True:
+                verify = False
+                errorTypes['complement'] = 'Invalid complement.'
         else:
             complement = None
 
-        if len(zipCode) == 9:
+       
+        if not zipCode.isnumeric() or len(zipCode) != 8:
+            verify = False
+            errorTypes['zipCode'] = 'Invalid zipcode'
+
+        if verify == True:
             try:
                 addressFind = pycep_correios.get_address_from_cep(zipCode)
-            except InvalidCEP as exc:
+            except CEPNotFound as exc:
                 verify = False
-                errorTypes['zipCode'] = 'Invalid zipcode.'
-        else :
-            verify = False
-            errorTypes['zipCode'] = 'Invalid zipcode.'
+                errorTypes['zipCode'] = 'Invalid zipcode'
 
         if number.isdecimal() is not True:
             verify = False

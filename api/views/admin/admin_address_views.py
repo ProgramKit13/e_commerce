@@ -3,10 +3,10 @@ from api import api
 from ...schemas import address_schema
 from flask import request, make_response, jsonify
 from ...entities import address
-from ...services import address_service
+from ...services import address_service, user_service
 from ...schemas .validators import validator
 import pycep_correios
-from pycep_correios.exceptions import InvalidCEP
+from pycep_correios.exceptions import InvalidCEP, CEPNotFound
 from ...decorators import admin_required
 
 
@@ -16,6 +16,8 @@ class AdminRegisterAdresses(Resource):
      def post(self):
         verify = True
         errorTypes = {}
+
+        
         cs = address_schema.AddressSchema()
         validate = cs.validate(request.json)
         if validate:
@@ -28,9 +30,18 @@ class AdminRegisterAdresses(Resource):
             city = request.json['city']
             zipCode = request.json["zipCode"]
             activate = request.json["activate"]
-            tokenUser = request.json["tokenUser"]
-
         
+        if "tokenUser" in request.json:
+            tokenUser = request.json['tokenUser']
+            getUserToken = user_service.get_user_token(tokenUser)
+            if getUserToken:
+                verify = True
+            else:
+                return make_response(jsonify("User not found"), 404)
+        else:
+            return make_response(jsonify("User not found"), 404)
+        
+
         if "complement" in request.json:
             complement = request.json['complement']
             complementValidate = validator.validate_text(complement)
@@ -54,20 +65,23 @@ class AdminRegisterAdresses(Resource):
         if cityValidate != True:
             verify = False
             errorTypes['city'] = cityValidate
-    
-       
-        # try:
-        #     addressFind = pycep_correios.get_address_from_cep(zipCode)
-        # except CEPNotFound as exc:
-        #         verify = False
-        #         errorTypes['zipCode'] = 'Invalid zipcode'
         
+        if not zipCode.isnumeric() or len(zipCode) != 8:
+            verify = False
+            errorTypes['zipCode'] = 'Invalid zipcode'
 
+        if verify == True:
+            try:
+                addressFind = pycep_correios.get_address_from_cep(zipCode)
+            except CEPNotFound as exc:
+                verify = False
+                errorTypes['zipCode'] = 'Invalid zipcode'
+
+        
         if state.isalpha() is not True or len(state) > 2:
             verify = False
             errorTypes['state'] = 'Invalid field.'
-            
-
+        
         if verify == True:
             new_address = address.Address(neighborhood=neighborhood, street=street, number=number, state=state, city=city, zipCode=zipCode, activate=activate, tokenUser=tokenUser, complement=complement)
             result = address_service.address_register(new_address)
@@ -133,13 +147,17 @@ class AdminUpdateAdresses(Resource):
         if cityValidate != True:
             verify = False
             errorTypes['city'] = cityValidate
-    
-       
-        # try:
-        #     addressFind = pycep_correios.get_address_from_cep(zipCode)
-        # except CEPNotFound as exc:
-        #         verify = False
-        #         errorTypes['zipCode'] = 'Invalid zipcode'
+
+        if not zipCode.isnumeric() or len(zipCode) != 8:
+            verify = False
+            errorTypes['zipCode'] = 'Invalid zipcode'
+
+        if verify == True:
+            try:
+                addressFind = pycep_correios.get_address_from_cep(zipCode)
+            except CEPNotFound as exc:
+                verify = False
+                errorTypes['zipCode'] = 'Invalid zipcode'
         
 
         if state.isalpha() is not True or len(state) > 2:

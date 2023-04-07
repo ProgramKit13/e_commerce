@@ -34,3 +34,5 @@ Um e-commerce pronto com backend api restfull e Machine Learning em Python, fron
 - `pip install validate-docbr`
 - `pip install flask-jwt-extended`
 - `pip install passlib`
+-`pip install mercadopago`
+-`pip install Flask-Mercadopago`

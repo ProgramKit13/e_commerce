@@ -50,6 +50,9 @@ def validate_text(text):
         if char not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZáéíóúàèìòùâêîôûãõçÁÉÍÓÚÀÈÌÒÙÂÊÎÔÛÃÕÇ0 ':
             verify = False
             msgm['char'] = 'Invalid character.'
+    if text.find('select') != -1 or text.find('update') != -1 or text.find('delete') != -1 or text.find('insert') != -1:
+            verify = False
+            msgm['bad_intention'] = 'Sql injection attempt.'
     if verify == False:
         return msgm
     else:
