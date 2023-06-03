@@ -3,8 +3,8 @@ from datetime import datetime
 from api import api
 from ..schemas import user_schema
 from flask import request, make_response, jsonify
-from ..entities import user
-from ..services import user_service
+from ..entities import user, adminPreferences
+from ..services import user_service, adminPreferences_service
 from ..schemas.validators import validator
 import secrets
 from validate_docbr import CPF
@@ -20,20 +20,15 @@ class UserRegister(Resource):
         if validate:
             return make_response(jsonify(validate), 400)
         else:
-            firstName = request.json['firstName']
-            lastName = request.json['lastName']
+            name = request.json['name']
             email = request.json["email"]
             password = request.json["password"]
-            cpf = request.json["cpf"]
-            genre = request.json['genre']
             adminAccess = True
             dateCreation = datetime.today()
             token = secrets.token_hex(6)
 
-            if "phone" in request.json:
-                phone = request.json['phone']
-            else:
-                phone = None
+            ##Preferences
+            productsPerPage = 'fifty'
                 
             validateEmail = validator.email_validate(email)
             if validateEmail is not True:
@@ -45,30 +40,19 @@ class UserRegister(Resource):
                 verify = False
                 errorTypes['password'] = 'Password out of standard.'
 
-            validateFirstName = validator.validate_name(firstName)
-            if validateFirstName != True:
+            validateName = validator.validate_text(name)
+            if validateName != True:
                 verify = False
-                errorTypes['firstName'] = validateFirstName
+                errorTypes['firstName'] = validateName
             
-            validateLastName = validator.validate_name(lastName)
-            if validateLastName != True:
-                verify = False
-                errorTypes['lastName'] = validateLastName
-
-            validateCPF = CPF()
-            cpfValidate = validateCPF.validate(cpf)
-            if cpfValidate == False:
-                verify = False
-                errorTypes['cpf'] = 'Invalid cpf.'
-            
-            if genre != '1' and genre != '2' and genre != '3':
-                verify = False
-                errorTypes['genre'] = 'Option invalid.'
+       
 
 
             if verify:
-                new_user = user.User(firstName=firstName, lastName=lastName, email=email, password=password, cpf=cpf, genre=genre, token=token, dateCreation=dateCreation, adminAccess=adminAccess, phone=phone)
+                new_user = user.User(name=name, email=email, password=password, token=token, dateCreation=dateCreation, adminAccess=adminAccess)
                 result = user_service.user_register(new_user)
+
+                adminPreferences_service.create_adminPreferences(token, productsPerPage)
                 ref = cs.jsonify(result)
                 return make_response(ref, 201)
             else:

@@ -3,7 +3,7 @@ from api import db
 from sqlalchemy import or_
 ##Register
 def prod_register(prod):
-    prod_bd = product_model.Product(prodName=prod.prodName, valueResale=prod.valueResale, cust=prod.cust, tax=prod.tax, supplier=prod.supplier, qt=prod.qt, alterResale=prod.alterResale, discount=prod.discount, description=prod.description, datePurchase=prod.datePurchase, dateShelf=prod.dateShelf, token=prod.token)
+    prod_bd = product_model.Product(prodName=prod.prodName, valueResale=prod.valueResale, cust=prod.cust, tax=prod.tax, supplier=prod.supplier, qt=prod.qt, discount=prod.discount, description=prod.description, datePurchase=prod.datePurchase, token=prod.token)
     db.session.add(prod_bd)
     db.session.commit()
 
@@ -22,48 +22,14 @@ def product_list_id(id):
     products = product_model.Product.query.filter_by(id=id).first()
     return products
 
+
+
 def product_list_token(token):
     product = product_model.Product.query.filter_by(token=token).first()
     return product
 
 
 
-def AdminsearchProduct(name):
-    search = "%{}%".format(name)
-    products = product_model.Product.query.filter(or_(product_model.Product.prodName.ilike(search), product_model.Product.description.ilike(search))).all()
-    detailsProduct = []
-    for product in products:
-        detailsProduct.append({
-            "product_name":product.prodName,
-            "value_resale":product.valueResale,
-            "cust":product.cust,
-            "tax":product.tax,
-            "supplier":product.supplier,
-            "amount":product.qt,
-            "alter_resale":product.alterResale,
-            "discount":product.discount,
-            "description":product.description,
-            "date_purchase":product.datePurchase,
-            "dateShelf":product.dateShelf
-        })
-    return detailsProduct
-
-
-
-def searchProduct(name):
-    search = "%{}%".format(name)
-    products = product_model.Product.query.filter(or_(product_model.Product.prodName.ilike(search), product_model.Product.description.ilike(search))).all()
-    detailsProduct = []
-    for product in products:
-        detailsProduct.append({
-            "name":product.prodName,
-            "value":product.valueResale,
-            "amount":product.qt,
-            "discount":product.discount,
-            "description":product.description,
-            "tokenProduct":product.token,
-        })
-    return detailsProduct
 ###################################
 
 

@@ -7,6 +7,16 @@ from ..services import user_service
 from ..schemas.validators import validator
 from flask_jwt_extended import create_access_token, create_refresh_token
 from datetime import timedelta
+from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
+
+
+def token_is_valid():
+    try:
+        verify_jwt_in_request()
+        identity = get_jwt_identity()
+        return True
+    except:
+        return False
 
 class Login(Resource):
             
@@ -48,7 +58,7 @@ class Login(Resource):
             if user_bd and user_bd.verify_pass(password):
                 access_token = create_access_token(
                     identity = user_bd.id,
-                    expires_delta=timedelta(seconds=900000)
+                    expires_delta=timedelta(seconds=1200)
                 )
 
                 refresh_token = create_refresh_token(
@@ -65,6 +75,14 @@ class Login(Resource):
             }), 401)
             
 
+class ProtectResource(Resource):
+    @jwt_required()
+    def post(self):
+        if token_is_valid():
+            return True
+        else:
+            return False
 
 
-api.add_resource(Login, '/login')
+api.add_resource(Login, '/dashadmin/login')
+api.add_resource(ProtectResource, '/protected')

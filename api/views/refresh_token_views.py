@@ -10,7 +10,7 @@ class RefreshTokenList(Resource):
             user_token = get_jwt_identity()
             access_token = create_access_token(
                 identity=user_token,
-                expires_delta=timedelta(seconds=1000)
+                expires_delta=timedelta(seconds=259200)
             )
 
             refresh_token = create_refresh_token(
@@ -25,4 +25,4 @@ class RefreshTokenList(Resource):
 
 
 
-api.add_resource(RefreshTokenList, '/token/refresh')
+api.add_resource(RefreshTokenList, '/protected/refresh')

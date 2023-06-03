@@ -3,7 +3,7 @@ import enum
 from sqlalchemy import Enum
 
 from . import cart_model
-from ..models import address_model, userPayments_model
+from ..models import address_model, userPayments_model, adminPreferences_model
 from passlib.hash import pbkdf2_sha256
 
 class genre(enum.Enum):
@@ -14,14 +14,10 @@ class genre(enum.Enum):
 class User(db.Model):
     __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False, unique=True)
-    firstName = db.Column(db.String(50), nullable=False)
-    lastName = db.Column(db.String(50), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(50), nullable=False, unique=True)
     password = db.Column(db.String(255), nullable=False)
-    cpf = db.Column(db.String(11), nullable=False)
-    genre = db.Column(db.Enum(genre), nullable=False)
     dateCreation = db.Column(db.DateTime, nullable=False)
-    phone = db.Column(db.String(13), nullable=True)
     token = db.Column(db.String(16), nullable=False, unique=True)
     adminAccess = db.Column(db.Boolean)
 
@@ -29,7 +25,7 @@ class User(db.Model):
     payments = db.relationship(userPayments_model.UserPayments, backref="user", lazy="dynamic")
     orders = db.relationship('Order', backref='user', lazy='dynamic')
     cart = db.relationship(cart_model.Cart, backref="user", lazy="dynamic")
-
+    adminPreferences = db.relationship(adminPreferences_model.AdminPreferences, backref='user', lazy='dynamic')
 
     def encrypt_pass(self):
         self.password = pbkdf2_sha256.hash(self.password)

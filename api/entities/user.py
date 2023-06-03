@@ -1,31 +1,20 @@
 class User():
-    def __init__(self, firstName, lastName, email, password, cpf, genre, dateCreation, token, adminAccess, phone):
-        self.__firstName = firstName
-        self.__lastName = lastName
+    def __init__(self, name, email, password, dateCreation, token, adminAccess):
+        self.__name = name
         self.__email = email
         self.__password = password
-        self.__cpf = cpf
-        self.__genre = genre
         self.__dateCreation = dateCreation
         self.__token = token
         self.__adminAccess = adminAccess
-        self.__phone = phone
     
     @property
-    def firstName(self):
-        return self.__firstName
+    def name(self):
+        return self.__name
         
-    @firstName.setter
-    def firstName(self, firstName):
-        self.__firstName = firstName
+    @name.setter
+    def name(self, name):
+        self.__name = name
 
-    @property
-    def lastName(self):
-        return self.__lastName
-        
-    @lastName.setter
-    def lastName(self, lastName):
-        self.__lastName = lastName
 
         
     @property
@@ -45,22 +34,6 @@ class User():
     def password(self, password):
         self.__password = password
 
-        
-    @property
-    def cpf(self):
-        return self.__cpf
-        
-    @cpf.setter
-    def cpf(self, cpf):
-        self.__cpf= cpf
-
-    @property
-    def genre(self):
-        return self.__genre
-        
-    @genre.setter
-    def genre(self, genre):
-        self.__genre= genre
 
     @property
     def dateCreation(self):
@@ -90,11 +63,3 @@ class User():
 
 
     
-    @property
-    def phone(self):
-        return self.__phone
-        
-    @phone.setter
-    def phone(self, phone):
-        self.__phone= phone
-

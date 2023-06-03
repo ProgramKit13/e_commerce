@@ -1,12 +1,16 @@
 from flask_restful import Resource
 from api import api
 from ...schemas import prod_schema
-from flask import request, make_response, jsonify
+from flask import request, make_response, jsonify, current_app
 from ...entities import product
-from ...services import product_service
+from ...services import product_service, adminPreferences_service, user_service
 import secrets
 from ...decorators import admin_required
 from ...schemas.validators import validator
+from .consult_config import paginate
+from ...models.product_model import Product
+from flask_jwt_extended import get_jwt_identity
+
 
 ##Product Register
 class AdminProdRegister(Resource):
@@ -15,6 +19,16 @@ class AdminProdRegister(Resource):
         errorTypes = {}
         verify = True 
         ps = prod_schema.ProdSchema()
+
+        if 'valueResale' in request.json:
+            request.json['valueResale'] = float(request.json['valueResale'])
+        if 'cust' in request.json:
+            request.json['cust'] = float(request.json['cust'])
+        if 'tax' in request.json and request.json['tax']:
+            request.json['tax'] = float(request.json['tax'])
+        if 'discount' in request.json and request.json['discount']:
+            request.json['discount'] = float(request.json['discount'])
+  
         validate = ps.validate(request.json)
         if validate:
             return make_response(jsonify(validate), 400)
@@ -25,11 +39,9 @@ class AdminProdRegister(Resource):
             tax = request.json['tax']
             supplier = request.json['supplier']
             qt = request.json['qt']
-            alterResale = request.json['alterResale']
             discount = request.json['discount']
             description = request.json['description']
             datePurchase = request.json['datePurchase']
-            dateShelf = request.json['dateShelf']
             token = secrets.token_hex(6)
 
         prodNameValidate = validator.validate_name(prodName)
@@ -49,11 +61,6 @@ class AdminProdRegister(Resource):
             if type(tax) != float:
                 verify = False
                 errorTypes['tax'] = 'Invalid format.'
-        
-        if alterResale:
-            if type(alterResale) != float:
-                verify = False
-                errorTypes['alterResale'] = 'Invalid format.'
 
         if discount:
             if type(discount) != float:
@@ -66,17 +73,15 @@ class AdminProdRegister(Resource):
             if validateDescription != True:
                 verify = False
                 errorTypes['description'] = validateDescription
-        else:
-            description = None
 
-
+                
         if type(qt) != int:
             verify = False
             errorTypes['qt'] = 'Invalid format.'
 
-        
+
         if verify:
-            new_prod = product.Product(prodName=prodName, valueResale=valueResale, cust=cust, tax=tax, supplier=supplier, qt=qt, alterResale=alterResale, discount=discount, description=description, datePurchase=datePurchase, dateShelf=dateShelf, token=token)
+            new_prod = product.Product(prodName=prodName, valueResale=valueResale, cust=cust, tax=tax, supplier=supplier, qt=qt, discount=discount, description=description, datePurchase=datePurchase, token=token)
             result = product_service.prod_register(new_prod)
             ref = ps.jsonify(result)
             return make_response(ref, 201)
@@ -88,11 +93,15 @@ class AdminProdRegister(Resource):
 class AdminShowProducts(Resource):
     @admin_required
     def get(self):
-        prods = product_service.product_list()
+        current_user =  get_jwt_identity()
+        user = user_service.get_user(current_user)  
         ps = prod_schema.ProdSchema(many=True)
-        return make_response(ps.jsonify(prods), 200)
+        preferecesPerPageProd = adminPreferences_service.get_adminPreferencesPerpage_by_token(user)
+        infoPaginate = paginate(Product, ps, preferecesPerPageProd.productsPerPage.value)
+        listEnum = adminPreferences_service.listPerpageProductsEnum()
+        return make_response(jsonify({'products': infoPaginate, 'enum': listEnum}), 200)
 
-  
+
 ##Search       
 class AdminProdSearchId(Resource):
     @admin_required
@@ -102,17 +111,25 @@ class AdminProdSearchId(Resource):
             return make_response(jsonify("Product not found"), 404)
         ps = prod_schema.ProdSchema()
         return make_response(ps.jsonify(product), 200)
+    
 
 class AdminProdSearchFilter(Resource):
     @admin_required
-    def post(self):
-        if 'prodName' in request.json:
-            name = request.json['prodName']
-            list_filter = product_service.AdminsearchProduct(name)
-            if list_filter == []:
-                return make_response(jsonify('Product not found'), 404)
-            return make_response(jsonify(list_filter), 201)
-        
+    def get(self, name):
+        try:
+            current_user =  get_jwt_identity()
+            user = user_service.get_user(current_user)  
+            preferecesPerPageProd = adminPreferences_service.get_adminPreferencesPerpage_by_token(user)
+            ps = prod_schema.ProdSchema(many=True)
+            infoPaginate = paginate(Product, ps, preferecesPerPageProd.productsPerPage.value, prodName=name)
+        except Exception as e:
+            current_app.logger.error(f"Error while searching for product: {e}")
+            return make_response(jsonify('Error while searching for product'), 500)
+
+        if not infoPaginate['list']:
+            return make_response(jsonify('Product not found'), 404)
+
+        return make_response(jsonify(infoPaginate), 200)
  
 ##Update
 class AdminUpdateProd(Resource):
@@ -138,7 +155,6 @@ class AdminUpdateProd(Resource):
             discount = request.json['discount']
             description = request.json['description']
             datePurchase = request.json['datePurchase']
-            dateShelf = request.json['dateShelf']
             token = product_db.token
 
         
@@ -186,7 +202,7 @@ class AdminUpdateProd(Resource):
 
         
         if verify:
-            upgrade_product = product.Product(prodName=prodName, valueResale=valueResale, cust=cust, tax=tax, supplier=supplier, qt=qt, alterResale=alterResale, discount=discount, description=description, datePurchase=datePurchase, dateShelf=dateShelf, token=token)
+            upgrade_product = product.Product(prodName=prodName, valueResale=valueResale, cust=cust, tax=tax, supplier=supplier, qt=qt, alterResale=alterResale, discount=discount, description=description, datePurchase=datePurchase, token=token)
             product_service.product_update(product_db, upgrade_product)
             response = product_service.product_list_id(id)
             return make_response(ps.jsonify(response), 200)
@@ -205,13 +221,13 @@ class AdminDeleteProd(Resource):
         return make_response(jsonify("Product deleted successfully."), 204)
 
 
-api.add_resource(AdminShowProducts, '/admin_dashboard/product_list')
+api.add_resource(AdminShowProducts, '/axiosadmin/gestao/produtos')
 
 api.add_resource(AdminProdRegister, '/admin_dashboard/product_register')
 
 api.add_resource(AdminProdSearchId, '/admin_dashboard/product_search/<int:id>')
 
-api.add_resource(AdminProdSearchFilter, '/admin_dashboard/product_searchByFilter')
+api.add_resource(AdminProdSearchFilter, '/axiosadmin/gestao/produtos/busca/<string:name>')
 
 api.add_resource(AdminUpdateProd, '/admin_dashboard/product_update/<int:id>')
 

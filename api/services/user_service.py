@@ -5,7 +5,7 @@ from passlib.hash import pbkdf2_sha256
 
 ##register
 def user_register(user):
-    user_bd = user_model.User(firstName=user.firstName, lastName=user.lastName, email=user.email, password=user.password, cpf=user.cpf, genre=user.genre, token=user.token, dateCreation=user.dateCreation, adminAccess=user.adminAccess, phone=user.phone)
+    user_bd = user_model.User(name=user.name, email=user.email, password=user.password, token=user.token, dateCreation=user.dateCreation, adminAccess=user.adminAccess)
     user_bd.encrypt_pass()
     db.session.add(user_bd)
     db.session.commit()

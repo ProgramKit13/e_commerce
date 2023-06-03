@@ -6,7 +6,7 @@ class ProdSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = product_model.Product
         load_instance = True
-        fields = ('id', 'prodName', 'valueResale', 'cust', 'tax', 'supplier', 'qt', 'alterResale', 'discount','description', 'datePurchase', 'dateShelf')
+        fields = ('id', 'prodName', 'valueResale', 'cust', 'tax', 'supplier', 'qt', 'discount','description', 'datePurchase')
  
     prodName = fields.String(required=True)
     valueResale = fields.Float(required=True)
@@ -16,5 +16,4 @@ class ProdSchema(ma.SQLAlchemyAutoSchema):
     qt = fields.Integer(required=True)
     description = fields.String(required=True)
     datePurchase = fields.Date(required=True)
-    dateShelf = fields.Date(required=True)
     discount = fields.Float(required=True)

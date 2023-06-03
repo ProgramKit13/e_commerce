@@ -4,7 +4,7 @@ from api import api
 from ...schemas import user_schema
 from flask import request, make_response, jsonify
 from ...entities import user
-from ...services import user_service
+from ...services import user_service, adminPreferences_service
 from ...schemas.validators import validator
 import secrets
 from validate_docbr import CPF
@@ -31,6 +31,13 @@ class adminRegister(Resource):
             phone = request.json['phone']
             dateCreation = datetime.today()
             token = secrets.token_hex(6)
+
+
+            ##Preferences
+            productPerPage = 50
+
+            if productPerPage is None or productPerPage != 50 or productPerPage.isnumeric() is not True:
+                productPerPage = 50
 
             validateEmail = validator.email_validate(email)
             if validateEmail is not True:
@@ -64,6 +71,7 @@ class adminRegister(Resource):
             if verify:
                 new_user = user.User(firstName=firstName, lastName=lastName, email=email, password=password, cpf=cpf, genre=genre, token=token, dateCreation=dateCreation, adminAccess=adminAccess, phone=phone)
                 result = user_service.user_register(new_user)
+                new_preferences = adminPreferences_service.create_adminPreferences(token=token, productPerPage=productPerPage)
                 ref = cs.jsonify(result)
                 return make_response(ref, 201)
             else:

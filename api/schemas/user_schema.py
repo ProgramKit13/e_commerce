@@ -6,14 +6,10 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = user_model.User
         load_instance = True
-        fields = ('id', 'firstName', 'lastName', 'email', 'password', 'cpf', 'genre', 'neighborhood', 'street', 'number', 'state', 'city', 'zipCode', 'adminAccess', 'phone')
+        fields = ('id', 'name', 'email', 'password', 'neighborhood', 'street', 'number', 'state', 'city', 'zipCode', 'adminAccess')
 
-    firstName = fields.String(required=True)
-    lastName = fields.String(required=True)
+    name = fields.String(required=True)
     email = fields.String(required=True)
     password = fields.String(required=True)     
-    cpf = fields.String(required=True)
-    genre = fields.String(required=True)
     adminAccess = fields.Boolean(required=False)
-    phone = fields.String(required=False)
 
