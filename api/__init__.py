@@ -18,4 +18,4 @@ mercadopago = Mercadopago(app)
 CORS(app)
 from .views import user_views, product_view, address_views, login_views, refresh_token_views, cart_views, payment_view
 from .views.admin import admin_user_views, admin_address_views, admin_product_views, admin_supplier_views, adminPreferences_views
-from .models import user_model, address_model, supplier_model, userPayments_model, cart_model, product_model
+from .models import user_model, address_model, supplier_model, userPayments_model, cart_model, product_model, sector_model

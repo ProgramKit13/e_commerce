@@ -3,7 +3,7 @@ from api import db
 from sqlalchemy import or_
 ##Register
 def prod_register(prod):
-    prod_bd = product_model.Product(prodName=prod.prodName, valueResale=prod.valueResale, cust=prod.cust, tax=prod.tax, supplier=prod.supplier, qt=prod.qt, discount=prod.discount, description=prod.description, datePurchase=prod.datePurchase, token=prod.token)
+    prod_bd = product_model.Product(prodName=prod.prodName, valueResale=prod.valueResale, cust=prod.cust, tax=prod.tax, supplier=prod.supplier, qt=prod.qt, discount=prod.discount, description=prod.description, datePurchase=prod.datePurchase, token=prod.token, sector=prod.sector)
     db.session.add(prod_bd)
     db.session.commit()
 

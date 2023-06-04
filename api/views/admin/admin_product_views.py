@@ -1,14 +1,15 @@
 from flask_restful import Resource
 from api import api
-from ...schemas import prod_schema
+from ...schemas import prod_schema, sector_schema
 from flask import request, make_response, jsonify, current_app
 from ...entities import product
-from ...services import product_service, adminPreferences_service, user_service
+from ...services import product_service, adminPreferences_service, user_service, sector_service
 import secrets
 from ...decorators import admin_required
 from ...schemas.validators import validator
 from .consult_config import paginate
 from ...models.product_model import Product
+from ...models.sector_model import Sector
 from flask_jwt_extended import get_jwt_identity
 
 
@@ -28,6 +29,8 @@ class AdminProdRegister(Resource):
             request.json['tax'] = float(request.json['tax'])
         if 'discount' in request.json and request.json['discount']:
             request.json['discount'] = float(request.json['discount'])
+
+        
   
         validate = ps.validate(request.json)
         if validate:
@@ -42,13 +45,32 @@ class AdminProdRegister(Resource):
             discount = request.json['discount']
             description = request.json['description']
             datePurchase = request.json['datePurchase']
+            sector = request.json['sector']
             token = secrets.token_hex(6)
+
 
         prodNameValidate = validator.validate_name(prodName)
         if prodNameValidate != True:
             verify = False
             errorTypes['prodName'] = prodNameValidate
 
+        sectorValidate = validator.validate_name(sector)
+        if sectorValidate != True:
+            verify = False
+            errorTypes['sector'] = sectorValidate
+        else:
+            sectorName = sector_service.sector_getBy_name(sector)
+            if not sectorName:
+                tokenSector = secrets.token_hex(6)
+                new_sector = Sector(name=sector, token=tokenSector)
+                sector_service.sector_register(new_sector)
+                sectorName = sector_service.sector_getBy_name(sector)
+                sector = sectorName.name
+            else:
+                sectorName = sector_service.sector_getBy_name(sector)
+                sector = sectorName.name
+
+        
         if type(valueResale) != float:
             verify = False
             errorTypes['valueResale'] = 'Invalid format.'
@@ -81,7 +103,7 @@ class AdminProdRegister(Resource):
 
 
         if verify:
-            new_prod = product.Product(prodName=prodName, valueResale=valueResale, cust=cust, tax=tax, supplier=supplier, qt=qt, discount=discount, description=description, datePurchase=datePurchase, token=token)
+            new_prod = product.Product(prodName=prodName, valueResale=valueResale, cust=cust, tax=tax, supplier=supplier, qt=qt, discount=discount, description=description, datePurchase=datePurchase, token=token, sector=sector)
             result = product_service.prod_register(new_prod)
             ref = ps.jsonify(result)
             return make_response(ref, 201)
@@ -99,7 +121,8 @@ class AdminShowProducts(Resource):
         preferecesPerPageProd = adminPreferences_service.get_adminPreferencesPerpage_by_token(user)
         infoPaginate = paginate(Product, ps, preferecesPerPageProd.productsPerPage.value)
         listEnum = adminPreferences_service.listPerpageProductsEnum()
-        return make_response(jsonify({'products': infoPaginate, 'enum': listEnum}), 200)
+        listSectors = sector_service.sector_list()
+        return make_response(jsonify({'products': infoPaginate, 'enum': listEnum, 'sectors': listSectors}), 200)
 
 
 ##Search       
@@ -221,6 +244,17 @@ class AdminDeleteProd(Resource):
         return make_response(jsonify("Product deleted successfully."), 204)
 
 
+
+class SectorList(Resource):
+    @admin_required
+    def get(self):
+        sectors = sector_service.sector_list()
+        if not sectors:
+            return make_response(jsonify("Sectors not found"), 404)
+        ss = sector_schema.SectorSchema(many=True)
+        return make_response(ss.jsonify(sectors), 200)
+    
+
 api.add_resource(AdminShowProducts, '/axiosadmin/gestao/produtos')
 
 api.add_resource(AdminProdRegister, '/admin_dashboard/product_register')
@@ -232,3 +266,5 @@ api.add_resource(AdminProdSearchFilter, '/axiosadmin/gestao/produtos/busca/<stri
 api.add_resource(AdminUpdateProd, '/admin_dashboard/product_update/<int:id>')
 
 api.add_resource(AdminDeleteProd, '/admin_dashboard/product_delete/<int:id>')
+
+api.add_resource(SectorList, '/axiosadmin/gestao/sectors')
