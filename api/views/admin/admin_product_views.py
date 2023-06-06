@@ -138,13 +138,15 @@ class AdminProdSearchId(Resource):
 
 class AdminProdSearchFilter(Resource):
     @admin_required
-    def get(self, name):
+    def get(self, infoSearch, typeSearch):
         try:
             current_user =  get_jwt_identity()
             user = user_service.get_user(current_user)  
             preferecesPerPageProd = adminPreferences_service.get_adminPreferencesPerpage_by_token(user)
             ps = prod_schema.ProdSchema(many=True)
-            infoPaginate = paginate(Product, ps, preferecesPerPageProd.productsPerPage.value, prodName=name)
+            if typeSearch != 'setor' and typeSearch != 'nome' and typeSearch != 'fornecedor' and typeSearch != 'descricao' and typeSearch != 'data':
+                return make_response(jsonify('Invalid search type'), 400)
+            infoPaginate = paginate(Product, ps, preferecesPerPageProd.productsPerPage.value, infoSearch=infoSearch, typeSearch=typeSearch)
         except Exception as e:
             current_app.logger.error(f"Error while searching for product: {e}")
             return make_response(jsonify('Error while searching for product'), 500)
@@ -261,7 +263,7 @@ api.add_resource(AdminProdRegister, '/admin_dashboard/product_register')
 
 api.add_resource(AdminProdSearchId, '/admin_dashboard/product_search/<int:id>')
 
-api.add_resource(AdminProdSearchFilter, '/axiosadmin/gestao/produtos/busca/<string:name>')
+api.add_resource(AdminProdSearchFilter, '/axiosadmin/gestao/produtos/busca/<string:typeSearch>/<string:infoSearch>')
 
 api.add_resource(AdminUpdateProd, '/admin_dashboard/product_update/<int:id>')
 
