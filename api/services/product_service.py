@@ -1,13 +1,43 @@
 from ..models import product_model
 from api import db
 from sqlalchemy import or_
+
 ##Register
 def prod_register(prod):
-    prod_bd = product_model.Product(prodName=prod.prodName, valueResale=prod.valueResale, cust=prod.cust, tax=prod.tax, supplier=prod.supplier, qt=prod.qt, discount=prod.discount, description=prod.description, datePurchase=prod.datePurchase, token=prod.token, sector=prod.sector)
+    prod_bd = product_model.Product(
+        prodName=prod.prodName, 
+        description=prod.description,
+        sector=prod.sector,
+        supplier=prod.supplier,
+        supplierCode=prod.supplierCode,
+        manufacturer=prod.manufacturer,
+        valueResale=prod.valueResale,
+        cust=prod.cust,
+        tax=prod.tax,
+        qt=prod.qt,
+        discount=prod.discount,
+        weight=prod.weight,
+        weightUnit=prod.weightUnit,
+        dimensions=prod.dimensions,
+        dimensionsUnit=prod.dimensionsUnit,
+        barcode=prod.barcode,
+        datePurchase=prod.datePurchase,
+        lastUpdated=prod.lastUpdated,
+        reorderPoint=prod.reorderPoint,
+        restockTime=prod.restockTime,
+        warrantyInfo=prod.warrantyInfo,
+        batchInfo=prod.batchInfo,
+        expiryDate=prod.expiryDate,
+        materialOrIngredients=prod.materialOrIngredients,
+        safetyRating=prod.safetyRating,
+        shippingRestrictions=prod.shippingRestrictions,
+        token=prod.token
+    )
     db.session.add(prod_bd)
     db.session.commit()
 
     return prod_bd
+
 ###################################
 
 

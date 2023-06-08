@@ -29,9 +29,9 @@ class AdminProdRegister(Resource):
             request.json['tax'] = float(request.json['tax'])
         if 'discount' in request.json and request.json['discount']:
             request.json['discount'] = float(request.json['discount'])
+        if 'weight' in request.json:
+            request.json['weight'] = float(request.json['weight'])
 
-        
-  
         validate = ps.validate(request.json)
         if validate:
             return make_response(jsonify(validate), 400)
@@ -46,14 +46,54 @@ class AdminProdRegister(Resource):
             description = request.json['description']
             datePurchase = request.json['datePurchase']
             sector = request.json['sector']
+            supplierCode = request.json.get('supplierCode')  
+            manufacturer = request.json.get('manufacturer')
+            weight = request.json.get('weight')
+            dimensions = request.json.get('dimensions')
+            lastUpdated = request.json.get('lastUpdated')
+            reorderPoint = request.json.get('reorderPoint')
+            restockTime = request.json.get('restockTime')
+            warrantyInfo = request.json.get('warrantyInfo')
+            batchInfo = request.json.get('batchInfo')
+            expiryDate = request.json.get('expiryDate')
+            materialOrIngredients = request.json.get('materialOrIngredients')
+            safetyRating = request.json.get('safetyRating')
+            shippingRestrictions = request.json.get('shippingRestrictions')
+            barcode = request.json.get('barcode')
+            weightUnit = request.json.get('weightUnit')
+            dimensionsUnit = request.json.get('dimensionsUnit')
             token = secrets.token_hex(6)
 
-
-        prodNameValidate = validator.validate_name(prodName)
+        
+        prodNameValidate = validator.validate_DiferentText(prodName)
         if prodNameValidate != True:
             verify = False
             errorTypes['prodName'] = prodNameValidate
 
+        
+        if type(valueResale) != float:
+            verify = False
+            errorTypes['valueResale'] = 'Invalid format.'
+        
+        if type(cust) != float:
+            verify = False
+            errorTypes['cust'] = 'Invalid format.'
+
+
+        if tax and type(tax) != float:
+            verify = False
+            errorTypes['tax'] = 'Invalid format.'
+
+        if discount and type(discount) != float:
+                verify = False
+                errorTypes['discount'] = 'Invalid format.'
+
+        
+        if type(qt) != int:
+            verify = False
+            errorTypes['qt'] = 'Invalid format.'
+        
+        
         sectorValidate = validator.validate_name(sector)
         if sectorValidate != True:
             verify = False
@@ -70,25 +110,6 @@ class AdminProdRegister(Resource):
                 sectorName = sector_service.sector_getBy_name(sector)
                 sector = sectorName.name
 
-        
-        if type(valueResale) != float:
-            verify = False
-            errorTypes['valueResale'] = 'Invalid format.'
-        
-        if type(cust) != float:
-            verify = False
-            errorTypes['cust'] = 'Invalid format.'
-        
-        if tax:
-            if type(tax) != float:
-                verify = False
-                errorTypes['tax'] = 'Invalid format.'
-
-        if discount:
-            if type(discount) != float:
-                verify = False
-                errorTypes['discount'] = 'Invalid format.'
-        
         if description in request.json:
             description = request.json['description']
             validateDescription = validator.validate_description(description)
@@ -96,19 +117,150 @@ class AdminProdRegister(Resource):
                 verify = False
                 errorTypes['description'] = validateDescription
 
-                
-        if type(qt) != int:
-            verify = False
-            errorTypes['qt'] = 'Invalid format.'
 
+        manufacturerValidate = validator.validate_DiferentText(manufacturer) if manufacturer else True
+        if manufacturerValidate != True:
+            verify = False
+            errorTypes['manufacturer'] = manufacturerValidate
+
+
+        if weight and type(weight) != float:
+            verify = False
+            errorTypes['weight'] = 'Invalid format.'
+
+
+        validateDimentions = validator.validateDimensions(dimensions)
+        if validateDimentions != True:
+            verify = False
+            errorTypes['dimensions'] = validateDimentions
+
+
+        barcodeValidate = validator.validateBarCode(barcode)
+        if barcodeValidate != True:
+            verify = False
+            errorTypes['barcode'] = barcodeValidate
+
+
+        datePurchaseValidate = validator.date_validate(datePurchase)
+        if datePurchaseValidate != True:
+            verify = False
+            errorTypes['datePurchase'] = datePurchaseValidate
+
+
+
+        weightUnitValidate = validator.validateWeightUnit(weightUnit)
+        if weightUnitValidate != True:
+            verify = False
+            errorTypes['weightUnit'] = weightUnitValidate
+
+        dimensionsUnitValidate = validator.validateDimensionsUnit(dimensionsUnit) 
+        if dimensionsUnitValidate != True:
+            verify = False
+            errorTypes['dimensionsUnit'] = dimensionsUnitValidate
+
+        
+        lastUpdatedValidate = validator.date_validate(lastUpdated)
+        if lastUpdatedValidate != True:
+            verify = False
+            errorTypes['lastUpdated'] = lastUpdatedValidate
+
+
+        if reorderPoint and type(reorderPoint) != int:
+            verify = False
+            errorTypes['reorderPoint'] = 'Invalid format.'
+            
+
+        if restockTime and type(restockTime) != int:
+            verify = False
+            errorTypes['restockTime'] = 'Invalid format.'
+
+
+        supplierValidate = validator.validate_name(supplier) if supplier else True
+        if supplierValidate != True:
+            verify = False
+            errorTypes['supplier'] = supplierValidate
+
+        supplierCodeValidate = validator.validateSupplierCode(supplierCode)
+        if supplierCodeValidate != True:
+            verify = False
+            errorTypes['supplierCode'] = supplierCodeValidate
+
+        warrantyInfoValidate = validator.validate_description(warrantyInfo) if warrantyInfo else True
+        if warrantyInfoValidate != True:
+            verify = False
+            errorTypes['warrantyInfo'] = warrantyInfoValidate
+
+        batchInfoValidate = validator.validate_description(batchInfo) if batchInfo else True
+        if batchInfoValidate != True:
+            verify = False
+            errorTypes['batchInfo'] = batchInfoValidate
+
+        materialOrIngredientsValidate = validator.validate_text(materialOrIngredients) 
+        if materialOrIngredientsValidate != True:
+            verify = False
+            errorTypes['materialOrIngredients'] = materialOrIngredientsValidate
+
+        safetyRatingValidate = validator.validate_text(safetyRating) 
+        if safetyRatingValidate != True:
+            verify = False
+            errorTypes['safetyRating'] = safetyRatingValidate
+        print(safetyRatingValidate)
+
+        shippingRestrictionsValidate = validator.validate_text(shippingRestrictions) 
+        if shippingRestrictionsValidate != True:
+            verify = False
+            errorTypes['shippingRestrictions'] = shippingRestrictionsValidate
+
+
+
+
+
+        expiryDateValidate = validator.date_validate(expiryDate) if expiryDate else True
+        if expiryDateValidate != True:
+            verify = False
+            errorTypes['expiryDate'] = expiryDateValidate
+
+        if lastUpdatedValidate != True:
+            verify = False
+            errorTypes['lastUpdated'] = lastUpdatedValidate
 
         if verify:
-            new_prod = product.Product(prodName=prodName, valueResale=valueResale, cust=cust, tax=tax, supplier=supplier, qt=qt, discount=discount, description=description, datePurchase=datePurchase, token=token, sector=sector)
+            new_prod = product.Product(
+                prodName=prodName,
+                description=description,
+                sector=sector,
+                supplier=supplier,
+                supplierCode=supplierCode,
+                manufacturer=manufacturer,
+                valueResale=valueResale,
+                cust=cust,
+                tax=tax,
+                qt=qt,
+                discount=discount,
+                weight=weight,
+                dimensions=dimensions,
+                datePurchase=datePurchase,
+                lastUpdated=lastUpdated,
+                reorderPoint=reorderPoint,
+                restockTime=restockTime,
+                warrantyInfo=warrantyInfo,
+                batchInfo=batchInfo,
+                expiryDate=expiryDate,
+                materialOrIngredients=materialOrIngredients,
+                safetyRating=safetyRating,
+                shippingRestrictions=shippingRestrictions,
+                token=token,
+                barcode=barcode,
+                weightUnit=weightUnit,
+                dimensionsUnit=dimensionsUnit
+            )
             result = product_service.prod_register(new_prod)
+            print(result)
             ref = ps.jsonify(result)
             return make_response(ref, 201)
         else:
             return make_response(jsonify(errorTypes), 404)
+
 ###############################################
 
 ##List

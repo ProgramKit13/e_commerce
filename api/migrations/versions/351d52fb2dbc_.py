@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 22ddd48d9ac9
+Revision ID: 351d52fb2dbc
 Revises: 
-Create Date: 2023-06-04 16:36:40.637359
+Create Date: 2023-06-06 21:29:47.035390
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '22ddd48d9ac9'
+revision = '351d52fb2dbc'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -21,15 +21,31 @@ def upgrade():
     op.create_table('products',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('prodName', sa.String(length=100), nullable=False),
+    sa.Column('description', sa.Text(), nullable=True),
+    sa.Column('sector', sa.String(length=100), nullable=False),
+    sa.Column('supplier', sa.String(length=100), nullable=True),
+    sa.Column('supplierCode', sa.String(length=100), nullable=True),
+    sa.Column('manufacturer', sa.String(length=100), nullable=True),
     sa.Column('valueResale', sa.Numeric(precision=8, scale=2), nullable=False),
     sa.Column('cust', sa.Numeric(precision=8, scale=2), nullable=False),
     sa.Column('tax', sa.Numeric(precision=8, scale=2), nullable=False),
-    sa.Column('supplier', sa.String(length=100), nullable=True),
     sa.Column('qt', sa.Integer(), nullable=False),
     sa.Column('discount', sa.Numeric(precision=4, scale=2), nullable=True),
-    sa.Column('description', sa.Text(), nullable=True),
+    sa.Column('weight', sa.Numeric(precision=8, scale=2), nullable=True),
+    sa.Column('weightUnit', sa.String(length=50), nullable=True),
+    sa.Column('dimensions', sa.String(length=100), nullable=True),
+    sa.Column('dimensionsUnit', sa.String(length=50), nullable=True),
+    sa.Column('barcode', sa.String(length=50), nullable=True),
     sa.Column('datePurchase', sa.Date(), nullable=False),
-    sa.Column('sector', sa.String(length=100), nullable=False),
+    sa.Column('lastUpdated', sa.Date(), nullable=True),
+    sa.Column('reorderPoint', sa.Integer(), nullable=True),
+    sa.Column('restockTime', sa.Integer(), nullable=True),
+    sa.Column('warrantyInfo', sa.Text(), nullable=True),
+    sa.Column('batchInfo', sa.String(length=100), nullable=True),
+    sa.Column('expiryDate', sa.Date(), nullable=True),
+    sa.Column('materialOrIngredients', sa.Text(), nullable=True),
+    sa.Column('safetyRating', sa.String(length=100), nullable=True),
+    sa.Column('shippingRestrictions', sa.Text(), nullable=True),
     sa.Column('token', sa.String(length=16), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('id'),
