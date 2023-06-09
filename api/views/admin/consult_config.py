@@ -2,6 +2,7 @@ from flask import request, url_for
 from sqlalchemy import or_
 
 def paginate(model, schema, perpage, infoSearch=None, typeSearch='prodName'):
+    print(infoSearch, typeSearch)
     page = int(request.args.get('page', 1))
     per_page = request.args.get('per_page', perpage)
     if per_page != 'undefined':
@@ -18,6 +19,10 @@ def paginate(model, schema, perpage, infoSearch=None, typeSearch='prodName'):
             typeSearch = 'sector'
         elif typeSearch == 'fornecedor':
             typeSearch = 'supplier'
+        elif typeSearch == 'barcode':
+            typeSearch = 'barcode'
+        elif typeSearch == 'fabricante':
+            typeSearch = 'manufacturer'
         search = f'%{infoSearch}%'
         query = model.query.filter(getattr(model, typeSearch).ilike(search))
     else:  # Otherwise, do not filter the query

@@ -11,7 +11,7 @@ from .consult_config import paginate
 from ...models.product_model import Product
 from ...models.sector_model import Sector
 from flask_jwt_extended import get_jwt_identity
-
+from .advancedfilter import paginate_advanced
 
 ##Product Register
 class AdminProdRegister(Resource):
@@ -31,6 +31,7 @@ class AdminProdRegister(Resource):
             request.json['discount'] = float(request.json['discount'])
         if 'weight' in request.json:
             request.json['weight'] = float(request.json['weight'])
+
 
         validate = ps.validate(request.json)
         if validate:
@@ -63,8 +64,31 @@ class AdminProdRegister(Resource):
             weightUnit = request.json.get('weightUnit')
             dimensionsUnit = request.json.get('dimensionsUnit')
             token = secrets.token_hex(6)
-
         
+        if lastUpdated == '':
+            lastUpdated = None
+
+        if expiryDate == '':
+            expiryDate = None
+
+        if barcode != '':
+            barcodeValidate = validator.validateBarCode(barcode)
+            if barcodeValidate != True:
+                verify = False
+                errorTypes['barcode'] = 'Invalid format.'
+        
+        if supplierCode != '':
+            supplierCodeValidate = validator.validateSupplierCode(supplierCode)
+            if supplierCodeValidate != True:
+                verify = False
+                errorTypes['supplierCode'] = 'Invalid format.'
+
+        if manufacturer != '':
+            manufacturerValidate = validator.validate_name(manufacturer)
+            if manufacturerValidate != True:
+                verify = False
+                errorTypes['manufacturer'] = manufacturerValidate
+
         prodNameValidate = validator.validate_DiferentText(prodName)
         if prodNameValidate != True:
             verify = False
@@ -118,27 +142,10 @@ class AdminProdRegister(Resource):
                 errorTypes['description'] = validateDescription
 
 
-        manufacturerValidate = validator.validate_DiferentText(manufacturer) if manufacturer else True
-        if manufacturerValidate != True:
-            verify = False
-            errorTypes['manufacturer'] = manufacturerValidate
-
 
         if weight and type(weight) != float:
             verify = False
             errorTypes['weight'] = 'Invalid format.'
-
-
-        validateDimentions = validator.validateDimensions(dimensions)
-        if validateDimentions != True:
-            verify = False
-            errorTypes['dimensions'] = validateDimentions
-
-
-        barcodeValidate = validator.validateBarCode(barcode)
-        if barcodeValidate != True:
-            verify = False
-            errorTypes['barcode'] = barcodeValidate
 
 
         datePurchaseValidate = validator.date_validate(datePurchase)
@@ -147,27 +154,10 @@ class AdminProdRegister(Resource):
             errorTypes['datePurchase'] = datePurchaseValidate
 
 
-
-        weightUnitValidate = validator.validateWeightUnit(weightUnit)
-        if weightUnitValidate != True:
-            verify = False
-            errorTypes['weightUnit'] = weightUnitValidate
-
-        dimensionsUnitValidate = validator.validateDimensionsUnit(dimensionsUnit) 
-        if dimensionsUnitValidate != True:
-            verify = False
-            errorTypes['dimensionsUnit'] = dimensionsUnitValidate
-
-        
-        lastUpdatedValidate = validator.date_validate(lastUpdated)
-        if lastUpdatedValidate != True:
-            verify = False
-            errorTypes['lastUpdated'] = lastUpdatedValidate
-
-
         if reorderPoint and type(reorderPoint) != int:
             verify = False
             errorTypes['reorderPoint'] = 'Invalid format.'
+        print(reorderPoint)
             
 
         if restockTime and type(restockTime) != int:
@@ -180,49 +170,6 @@ class AdminProdRegister(Resource):
             verify = False
             errorTypes['supplier'] = supplierValidate
 
-        supplierCodeValidate = validator.validateSupplierCode(supplierCode)
-        if supplierCodeValidate != True:
-            verify = False
-            errorTypes['supplierCode'] = supplierCodeValidate
-
-        warrantyInfoValidate = validator.validate_description(warrantyInfo) if warrantyInfo else True
-        if warrantyInfoValidate != True:
-            verify = False
-            errorTypes['warrantyInfo'] = warrantyInfoValidate
-
-        batchInfoValidate = validator.validate_description(batchInfo) if batchInfo else True
-        if batchInfoValidate != True:
-            verify = False
-            errorTypes['batchInfo'] = batchInfoValidate
-
-        materialOrIngredientsValidate = validator.validate_text(materialOrIngredients) 
-        if materialOrIngredientsValidate != True:
-            verify = False
-            errorTypes['materialOrIngredients'] = materialOrIngredientsValidate
-
-        safetyRatingValidate = validator.validate_text(safetyRating) 
-        if safetyRatingValidate != True:
-            verify = False
-            errorTypes['safetyRating'] = safetyRatingValidate
-        print(safetyRatingValidate)
-
-        shippingRestrictionsValidate = validator.validate_text(shippingRestrictions) 
-        if shippingRestrictionsValidate != True:
-            verify = False
-            errorTypes['shippingRestrictions'] = shippingRestrictionsValidate
-
-
-
-
-
-        expiryDateValidate = validator.date_validate(expiryDate) if expiryDate else True
-        if expiryDateValidate != True:
-            verify = False
-            errorTypes['expiryDate'] = expiryDateValidate
-
-        if lastUpdatedValidate != True:
-            verify = False
-            errorTypes['lastUpdated'] = lastUpdatedValidate
 
         if verify:
             new_prod = product.Product(
@@ -296,7 +243,7 @@ class AdminProdSearchFilter(Resource):
             user = user_service.get_user(current_user)  
             preferecesPerPageProd = adminPreferences_service.get_adminPreferencesPerpage_by_token(user)
             ps = prod_schema.ProdSchema(many=True)
-            if typeSearch != 'setor' and typeSearch != 'nome' and typeSearch != 'fornecedor' and typeSearch != 'descricao' and typeSearch != 'data':
+            if typeSearch != 'setor' and typeSearch != 'nome' and typeSearch != 'fornecedor' and typeSearch != 'descricao' and typeSearch != 'barcode' != typeSearch != 'fabricante':
                 return make_response(jsonify('Invalid search type'), 400)
             infoPaginate = paginate(Product, ps, preferecesPerPageProd.productsPerPage.value, infoSearch=infoSearch, typeSearch=typeSearch)
         except Exception as e:
@@ -308,6 +255,36 @@ class AdminProdSearchFilter(Resource):
 
         return make_response(jsonify(infoPaginate), 200)
  
+
+
+###################################################
+from flask import request, url_for
+from sqlalchemy import or_, and_
+
+class AdvancedSearchFilter(Resource):
+    @admin_required
+    def get(self):
+        try:
+            current_user = get_jwt_identity()
+            user = user_service.get_user(current_user)
+            preferencesPerPageProd = adminPreferences_service.get_adminPreferencesPerpage_by_token(user)
+            ps = prod_schema.ProdSchema(many=True)
+            filters = request.args.to_dict()  # Get all filters from the request
+            infoPaginate = paginate_advanced(Product, ps, preferencesPerPageProd.productsPerPage.value, **filters)
+        except Exception as e:
+            current_app.logger.error(f"Error while searching for product: {e}")
+            return make_response(jsonify('Error while searching for product'), 500)
+
+        if not infoPaginate['list']:
+            return make_response(jsonify('Product not found'), 404)
+
+        return make_response(jsonify(infoPaginate), 200)
+
+
+
+
+
+
 ##Update
 class AdminUpdateProd(Resource):
     @admin_required
@@ -405,8 +382,7 @@ class SectorList(Resource):
         sectors = sector_service.sector_list()
         if not sectors:
             return make_response(jsonify("Sectors not found"), 404)
-        ss = sector_schema.SectorSchema(many=True)
-        return make_response(ss.jsonify(sectors), 200)
+        return make_response(jsonify(sectors), 200)
     
 
 api.add_resource(AdminShowProducts, '/axiosadmin/gestao/produtos')
@@ -417,8 +393,10 @@ api.add_resource(AdminProdSearchId, '/admin_dashboard/product_search/<int:id>')
 
 api.add_resource(AdminProdSearchFilter, '/axiosadmin/gestao/produtos/busca/<string:typeSearch>/<string:infoSearch>')
 
+api.add_resource(AdvancedSearchFilter, '/axiosadmin/gestao/produtos/busca_avancada')
+
 api.add_resource(AdminUpdateProd, '/admin_dashboard/product_update/<int:id>')
 
 api.add_resource(AdminDeleteProd, '/admin_dashboard/product_delete/<int:id>')
 
-api.add_resource(SectorList, '/axiosadmin/gestao/sectors')
+api.add_resource(SectorList, '/axiosadmin/list_sectors')
