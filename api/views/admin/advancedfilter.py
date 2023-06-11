@@ -3,24 +3,25 @@ from sqlalchemy import or_, and_
 
 def paginate_advanced(model, schema, per_page, **filters):
     page = int(request.args.get('page', 1))
-    if 'per_page' in filters and filters['per_page'] != 'undefined':
-        per_page = int(filters.pop('per_page'))
 
     search_fields = ['nome', 'descricao', 'setor', 'fornecedor', 'barcode', 'fabricante']
     model_filters = []
+    translated_filters = {}
     for field, value in filters.items():
         if field in search_fields:
-            field = translate_search_field(field)
-            model_filters.append(getattr(model, field).ilike(f'%{value}%'))
+            translated_field = translate_search_field(field)
+            model_filters.append(getattr(model, translated_field).ilike(f'%{value}%'))
+            translated_filters[translated_field] = value
         elif hasattr(model, field):  # Add filter for other model fields
             model_filters.append(getattr(model, field) == value)
+            translated_filters[field] = value
 
     query = model.query.filter(and_(*model_filters))
 
     page_obj = query.paginate(page=page, per_page=per_page)
 
-    next_url = url_for(request.endpoint, page=page_obj.next_num if page_obj.has_next else page_obj.page, per_page=per_page, **filters)
-    prev_url = url_for(request.endpoint, page=page_obj.prev_num if page_obj.has_prev else page_obj.page, per_page=per_page, **filters)
+    next_url = url_for(request.endpoint, page=page_obj.next_num if page_obj.has_next else page_obj.page, per_page=per_page, **translated_filters)
+    prev_url = url_for(request.endpoint, page=page_obj.prev_num if page_obj.has_prev else page_obj.page, per_page=per_page, **translated_filters)
 
     return {
         'list': schema.dump(page_obj.items),
@@ -31,6 +32,7 @@ def paginate_advanced(model, schema, per_page, **filters):
         'page': page_obj.page,
         'per_page': page_obj.per_page
     }
+
 
 def translate_search_field(field):
     return {

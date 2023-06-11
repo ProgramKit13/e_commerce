@@ -7,7 +7,6 @@ from ...services import product_service, adminPreferences_service, user_service,
 import secrets
 from ...decorators import admin_required
 from ...schemas.validators import validator
-from .consult_config import paginate
 from ...models.product_model import Product
 from ...models.sector_model import Sector
 from flask_jwt_extended import get_jwt_identity
@@ -210,19 +209,6 @@ class AdminProdRegister(Resource):
 
 ###############################################
 
-##List
-class AdminShowProducts(Resource):
-    @admin_required
-    def get(self):
-        current_user =  get_jwt_identity()
-        user = user_service.get_user(current_user)  
-        ps = prod_schema.ProdSchema(many=True)
-        preferecesPerPageProd = adminPreferences_service.get_adminPreferencesPerpage_by_token(user)
-        infoPaginate = paginate(Product, ps, preferecesPerPageProd.productsPerPage.value)
-        listEnum = adminPreferences_service.listPerpageProductsEnum()
-        listSectors = sector_service.sector_list()
-        return make_response(jsonify({'products': infoPaginate, 'enum': listEnum, 'sectors': listSectors}), 200)
-
 
 ##Search       
 class AdminProdSearchId(Resource):
@@ -235,33 +221,8 @@ class AdminProdSearchId(Resource):
         return make_response(ps.jsonify(product), 200)
     
 
-class AdminProdSearchFilter(Resource):
-    @admin_required
-    def get(self, infoSearch, typeSearch):
-        try:
-            current_user =  get_jwt_identity()
-            user = user_service.get_user(current_user)  
-            preferecesPerPageProd = adminPreferences_service.get_adminPreferencesPerpage_by_token(user)
-            ps = prod_schema.ProdSchema(many=True)
-            if typeSearch != 'setor' and typeSearch != 'nome' and typeSearch != 'fornecedor' and typeSearch != 'descricao' and typeSearch != 'barcode' != typeSearch != 'fabricante':
-                return make_response(jsonify('Invalid search type'), 400)
-            infoPaginate = paginate(Product, ps, preferecesPerPageProd.productsPerPage.value, infoSearch=infoSearch, typeSearch=typeSearch)
-        except Exception as e:
-            current_app.logger.error(f"Error while searching for product: {e}")
-            return make_response(jsonify('Error while searching for product'), 500)
-
-        if not infoPaginate['list']:
-            return make_response(jsonify('Product not found'), 404)
-
-        return make_response(jsonify(infoPaginate), 200)
- 
-
-
-###################################################
-from flask import request, url_for
-from sqlalchemy import or_, and_
-
-class AdvancedSearchFilter(Resource):
+####List and search
+class GetAllandSearch(Resource):
     @admin_required
     def get(self):
         try:
@@ -269,19 +230,22 @@ class AdvancedSearchFilter(Resource):
             user = user_service.get_user(current_user)
             preferencesPerPageProd = adminPreferences_service.get_adminPreferencesPerpage_by_token(user)
             ps = prod_schema.ProdSchema(many=True)
-            filters = request.args.to_dict()  # Get all filters from the request
-            infoPaginate = paginate_advanced(Product, ps, preferencesPerPageProd.productsPerPage.value, **filters)
+            filters = request.args.to_dict() 
+            if 'per_page' in filters and filters['per_page'] != 'undefined':
+                per_page = int(filters.pop('per_page'))
+            else:
+                per_page = preferencesPerPageProd.productsPerPage.value
+            infoPaginate = paginate_advanced(Product, ps, per_page, **filters)
+            print(infoPaginate)
         except Exception as e:
-            current_app.logger.error(f"Error while searching for product: {e}")
+            current_app.logger.error(f"Error while searching for product: {type(e).__name__} {e}")
+
             return make_response(jsonify('Error while searching for product'), 500)
 
         if not infoPaginate['list']:
             return make_response(jsonify('Product not found'), 404)
 
         return make_response(jsonify(infoPaginate), 200)
-
-
-
 
 
 
@@ -385,15 +349,11 @@ class SectorList(Resource):
         return make_response(jsonify(sectors), 200)
     
 
-api.add_resource(AdminShowProducts, '/axiosadmin/gestao/produtos')
-
 api.add_resource(AdminProdRegister, '/admin_dashboard/product_register')
 
 api.add_resource(AdminProdSearchId, '/admin_dashboard/product_search/<int:id>')
 
-api.add_resource(AdminProdSearchFilter, '/axiosadmin/gestao/produtos/busca/<string:typeSearch>/<string:infoSearch>')
-
-api.add_resource(AdvancedSearchFilter, '/axiosadmin/gestao/produtos/busca_avancada')
+api.add_resource(GetAllandSearch, '/axiosadmin/gestao/produtos')
 
 api.add_resource(AdminUpdateProd, '/admin_dashboard/product_update/<int:id>')
 
