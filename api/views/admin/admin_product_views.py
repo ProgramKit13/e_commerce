@@ -211,10 +211,10 @@ class AdminProdRegister(Resource):
 
 
 ##Search       
-class AdminProdSearchId(Resource):
+class AdminGetProdToken(Resource):
     @admin_required
-    def get(self, id):
-        product = product_service.product_list_id(id)
+    def get(self, token):
+        product = product_service.product_list_token(token)
         if product is None:
             return make_response(jsonify("Product not found"), 404)
         ps = prod_schema.ProdSchema()
@@ -236,7 +236,6 @@ class GetAllandSearch(Resource):
             else:
                 per_page = preferencesPerPageProd.productsPerPage.value
             infoPaginate = paginate_advanced(Product, ps, per_page, **filters)
-            print(infoPaginate)
         except Exception as e:
             current_app.logger.error(f"Error while searching for product: {type(e).__name__} {e}")
 
@@ -351,7 +350,7 @@ class SectorList(Resource):
 
 api.add_resource(AdminProdRegister, '/admin_dashboard/product_register')
 
-api.add_resource(AdminProdSearchId, '/admin_dashboard/product_search/<int:id>')
+api.add_resource(AdminGetProdToken, '/axiosadmin/products/getByToken/<string:token>')
 
 api.add_resource(GetAllandSearch, '/axiosadmin/gestao/produtos')
 
