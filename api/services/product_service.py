@@ -66,17 +66,31 @@ def product_list_token(token):
 ##Update
 def product_update(oldData, newData):
     oldData.prodName = newData.prodName
+    oldData.description = newData.description
+    oldData.sector = newData.sector
+    oldData.supplier = newData.supplier
+    oldData.supplierCode = newData.supplierCode
+    oldData.manufacturer = newData.manufacturer
     oldData.valueResale = newData.valueResale
     oldData.cust = newData.cust
     oldData.tax = newData.tax
-    oldData.supplier = newData.supplier
     oldData.qt = newData.qt
-    oldData.alterResale = newData.alterResale
     oldData.discount = newData.discount
-    oldData.description = newData.description
+    oldData.weight = newData.weight
+    oldData.weightUnit = newData.weightUnit
+    oldData.dimensions = newData.dimensions
+    oldData.dimensionsUnit = newData.dimensionsUnit
+    oldData.barcode = newData.barcode
     oldData.datePurchase = newData.datePurchase
-    oldData.dateShelf = newData.dateShelf
-    oldData.token = newData.token
+    oldData.lastUpdated = newData.lastUpdated
+    oldData.reorderPoint = newData.reorderPoint
+    oldData.restockTime = newData.restockTime
+    oldData.warrantyInfo = newData.warrantyInfo
+    oldData.batchInfo = newData.batchInfo
+    oldData.expiryDate = newData.expiryDate
+    oldData.materialOrIngredients = newData.materialOrIngredients
+    oldData.safetyRating = newData.safetyRating
+    oldData.shippingRestrictions = newData.shippingRestrictions
     db.session.commit()
 ####################################
 

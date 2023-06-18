@@ -3,21 +3,36 @@ regexEmail = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+([.]\w{2,})+$'
 from datetime import datetime
 from voluptuous import Schema, All, Length, Match, In
 
-def validate_DiferentText(text):
+def validateGlobalText(text, required, pureText, min, max):
     verify = True
     msgm = {}
-    if text == '':
+    if text == '' and required == True:
         verify = False
         msgm['empty'] = 'Field must not be empty.'
-    elif len(text) < 3 or len(text) > 100:
-        verify = False
-        msgm['amount'] = 'Invalid amount.'
-    elif text[0] == ' ' or text[-1] == ' ':
-        verify = False
-        msgm['spaces'] = 'Invalid spaces.'
-    if 'SELECT' in text or 'UPDATE' in text or 'DELETE' in text or 'INSERT' in text:
-        verify = False
-        msgm['bad_intention'] = 'Tentativa de injeção de SQL.'
+
+    if text != '':
+        if len(text) < min or len(text) > max:
+            verify = False
+            msgm['amount'] = 'Invalid amount.'
+        
+        elif text[0] == ' ' or text[-1] == ' ':
+            verify = False
+            msgm['spaces'] = 'Invalid spaces.'
+        
+        elif 'SELECT' in text or 'UPDATE' in text or 'DELETE' in text or 'INSERT' in text:
+            verify = False
+            msgm['bad_intention'] = 'Tentativa de injeção de SQL.'
+
+        elif pureText == False:
+            for char in text:
+                if char not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZáéíóúàèìòùâêîôûãõçÁÉÍÓÚÀÈÌÒÙÂÊÎÔÛÃÕÇ01234567890 !@#$%^&*()':
+                        verify = False
+                        msgm['char'] = 'Invalid character.'
+        else:
+            for char in text:
+                if char not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZáéíóúàèìòùâêîôûãõçÁÉÍÓÚÀÈÌÒÙÂÊÎÔÛÃÕÇ0':
+                    verify = False
+                    msgm['char'] = 'Invalid character.'
     if verify == False:
         return msgm
     else:

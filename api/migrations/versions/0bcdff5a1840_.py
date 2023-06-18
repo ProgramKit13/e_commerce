@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 351d52fb2dbc
+Revision ID: 0bcdff5a1840
 Revises: 
-Create Date: 2023-06-06 21:29:47.035390
+Create Date: 2023-06-18 14:01:25.868613
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '351d52fb2dbc'
+revision = '0bcdff5a1840'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -22,13 +22,13 @@ def upgrade():
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('prodName', sa.String(length=100), nullable=False),
     sa.Column('description', sa.Text(), nullable=True),
-    sa.Column('sector', sa.String(length=100), nullable=False),
+    sa.Column('sector', sa.String(length=100), nullable=True),
     sa.Column('supplier', sa.String(length=100), nullable=True),
     sa.Column('supplierCode', sa.String(length=100), nullable=True),
     sa.Column('manufacturer', sa.String(length=100), nullable=True),
     sa.Column('valueResale', sa.Numeric(precision=8, scale=2), nullable=False),
-    sa.Column('cust', sa.Numeric(precision=8, scale=2), nullable=False),
-    sa.Column('tax', sa.Numeric(precision=8, scale=2), nullable=False),
+    sa.Column('cust', sa.Numeric(precision=8, scale=2), nullable=True),
+    sa.Column('tax', sa.Numeric(precision=8, scale=2), nullable=True),
     sa.Column('qt', sa.Integer(), nullable=False),
     sa.Column('discount', sa.Numeric(precision=4, scale=2), nullable=True),
     sa.Column('weight', sa.Numeric(precision=8, scale=2), nullable=True),
@@ -36,7 +36,7 @@ def upgrade():
     sa.Column('dimensions', sa.String(length=100), nullable=True),
     sa.Column('dimensionsUnit', sa.String(length=50), nullable=True),
     sa.Column('barcode', sa.String(length=50), nullable=True),
-    sa.Column('datePurchase', sa.Date(), nullable=False),
+    sa.Column('datePurchase', sa.Date(), nullable=True),
     sa.Column('lastUpdated', sa.Date(), nullable=True),
     sa.Column('reorderPoint', sa.Integer(), nullable=True),
     sa.Column('restockTime', sa.Integer(), nullable=True),

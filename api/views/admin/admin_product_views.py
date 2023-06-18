@@ -1,6 +1,6 @@
 from flask_restful import Resource
 from api import api
-from ...schemas import prod_schema, sector_schema
+from ...schemas import prod_schema
 from flask import request, make_response, jsonify, current_app
 from ...entities import product
 from ...services import product_service, adminPreferences_service, user_service, sector_service
@@ -64,6 +64,27 @@ class AdminProdRegister(Resource):
             dimensionsUnit = request.json.get('dimensionsUnit')
             token = secrets.token_hex(6)
         
+        prodNameValidate = validator.validateGlobalText(prodName, True, False, 3, 100)
+        if prodNameValidate != True:
+            verify = False
+            errorTypes['prodName'] = prodNameValidate
+
+        if type(valueResale) != float:
+            verify = False
+            errorTypes['valueResale'] = 'Invalid format.'
+
+        
+        if type(qt) != int:
+            verify = False
+            errorTypes['qt'] = 'Invalid format.'
+
+        if manufacturer != '':
+            manufacturerValidate = validator.validateGlobalText(manufacturer, False, False, 3, 100)
+            if manufacturerValidate != True:
+                verify = False
+                errorTypes['manufacturer'] = manufacturerValidate
+
+        
         if lastUpdated == '':
             lastUpdated = None
 
@@ -82,60 +103,44 @@ class AdminProdRegister(Resource):
                 verify = False
                 errorTypes['supplierCode'] = 'Invalid format.'
 
-        if manufacturer != '':
-            manufacturerValidate = validator.validate_name(manufacturer)
-            if manufacturerValidate != True:
+        
+        if cust != '':
+            if type(cust) != float:
                 verify = False
-                errorTypes['manufacturer'] = manufacturerValidate
-
-        prodNameValidate = validator.validate_DiferentText(prodName)
-        if prodNameValidate != True:
-            verify = False
-            errorTypes['prodName'] = prodNameValidate
-
-        
-        if type(valueResale) != float:
-            verify = False
-            errorTypes['valueResale'] = 'Invalid format.'
-        
-        if type(cust) != float:
-            verify = False
-            errorTypes['cust'] = 'Invalid format.'
+                errorTypes['cust'] = 'Invalid format.'
 
 
-        if tax and type(tax) != float:
-            verify = False
-            errorTypes['tax'] = 'Invalid format.'
-
-        if discount and type(discount) != float:
+        if tax != '':
+            if tax and type(tax) != float:
                 verify = False
-                errorTypes['discount'] = 'Invalid format.'
+                errorTypes['tax'] = 'Invalid format.'
 
+        if discount != '':
+            if discount and type(discount) != float:
+                    verify = False
+                    errorTypes['discount'] = 'Invalid format.'
         
-        if type(qt) != int:
-            verify = False
-            errorTypes['qt'] = 'Invalid format.'
         
-        
-        sectorValidate = validator.validate_name(sector)
-        if sectorValidate != True:
-            verify = False
-            errorTypes['sector'] = sectorValidate
-        else:
-            sectorName = sector_service.sector_getBy_name(sector)
-            if not sectorName:
-                tokenSector = secrets.token_hex(6)
-                new_sector = Sector(name=sector, token=tokenSector)
-                sector_service.sector_register(new_sector)
-                sectorName = sector_service.sector_getBy_name(sector)
-                sector = sectorName.name
+        if sector != '':
+            sectorValidate = validator.validateGlobalText(sector, False, False, 3, 100)
+            if sectorValidate != True:
+                verify = False
+                errorTypes['sector'] = sectorValidate
             else:
                 sectorName = sector_service.sector_getBy_name(sector)
-                sector = sectorName.name
+                if not sectorName:
+                    tokenSector = secrets.token_hex(6)
+                    new_sector = Sector(name=sector, token=tokenSector)
+                    sector_service.sector_register(new_sector)
+                    sectorName = sector_service.sector_getBy_name(sector)
+                    sector = sectorName.name
+                else:
+                    sectorName = sector_service.sector_getBy_name(sector)
+                    sector = sectorName.name
 
         if description in request.json:
             description = request.json['description']
-            validateDescription = validator.validate_description(description)
+            validateDescription = validator.validateGlobalText(description, False, False, 3, 2048)
             if validateDescription != True:
                 verify = False
                 errorTypes['description'] = validateDescription
@@ -146,11 +151,11 @@ class AdminProdRegister(Resource):
             verify = False
             errorTypes['weight'] = 'Invalid format.'
 
-
-        datePurchaseValidate = validator.date_validate(datePurchase)
-        if datePurchaseValidate != True:
-            verify = False
-            errorTypes['datePurchase'] = datePurchaseValidate
+        if datePurchase == '':
+            datePurchaseValidate = validator.date_validate(datePurchase)
+            if datePurchaseValidate != True:
+                verify = False
+                errorTypes['datePurchase'] = datePurchaseValidate
 
 
         if reorderPoint and type(reorderPoint) != int:
@@ -164,10 +169,41 @@ class AdminProdRegister(Resource):
             errorTypes['restockTime'] = 'Invalid format.'
 
 
-        supplierValidate = validator.validate_name(supplier) if supplier else True
-        if supplierValidate != True:
-            verify = False
-            errorTypes['supplier'] = supplierValidate
+        if supplier != '':
+            supplierValidate = validator.validateGlobalText(supplier, False, False, 3, 100)
+            if supplierValidate != True:
+                verify = False
+                errorTypes['supplier'] = supplierValidate
+
+        if warrantyInfo != '':
+            warrantyInfoValidate = validator.validateGlobalText(warrantyInfo, False, False, 3, 100)
+            if warrantyInfoValidate != True:
+                verify = False
+                errorTypes['warrantyInfo'] = warrantyInfoValidate
+        
+        if batchInfo != '':
+            batchInfoValidate = validator.validateGlobalText(batchInfo, False, False, 3, 100)
+            if batchInfoValidate != True:
+                verify = False
+                errorTypes['batchInfo'] = batchInfoValidate
+
+        if materialOrIngredients != '':
+            materialOrIngredientsValidate = validator.validateGlobalText(materialOrIngredients, False, False, 3, 100)
+            if materialOrIngredientsValidate != True:
+                verify = False
+                errorTypes['materialOrIngredients'] = materialOrIngredientsValidate
+
+        if safetyRating != '':
+            safetyRatingValidate = validator.validateGlobalText(safetyRating, False, False, 3, 100)
+            if safetyRatingValidate != True:
+                verify = False
+                errorTypes['safetyRating'] = safetyRatingValidate
+
+        if shippingRestrictions != '':
+            shippingRestrictionsValidate = validator.validateGlobalText(shippingRestrictions, False, False, 3, 100)
+            if shippingRestrictionsValidate != True:
+                verify = False
+                errorTypes['shippingRestrictions'] = shippingRestrictionsValidate
 
 
         if verify:
@@ -201,7 +237,6 @@ class AdminProdRegister(Resource):
                 dimensionsUnit=dimensionsUnit
             )
             result = product_service.prod_register(new_prod)
-            print(result)
             ref = ps.jsonify(result)
             return make_response(ref, 201)
         else:
@@ -242,7 +277,7 @@ class GetAllandSearch(Resource):
             return make_response(jsonify('Error while searching for product'), 500)
 
         if not infoPaginate['list']:
-            return make_response(jsonify('Product not found'), 404)
+            return make_response(jsonify('Not product registred'), 202)
 
         return make_response(jsonify(infoPaginate), 200)
 
@@ -251,14 +286,28 @@ class GetAllandSearch(Resource):
 ##Update
 class AdminUpdateProd(Resource):
     @admin_required
-    def put(self, id):
-        product_db = product_service.product_list_id(id)
+    def put(self, token):
+        product_db = product_service.product_list_token(token)
         verify = True
         errorTypes = {}
         if product_db is None:
             return make_response(jsonify("Product not fount."), 404)
         ps = prod_schema.ProdSchema()
         validate = ps.validate(request.json)
+        print(validate)
+        if 'valueResale' in request.json:
+            request.json['valueResale'] = float(request.json['valueResale'])
+        if 'cust' in request.json:
+            request.json['cust'] = float(request.json['cust'])
+        if 'tax' in request.json and request.json['tax']:
+            request.json['tax'] = float(request.json['tax'])
+        if 'discount' in request.json and request.json['discount']:
+            request.json['discount'] = float(request.json['discount'])
+        if 'weight' in request.json:
+            request.json['weight'] = float(request.json['weight'])
+
+
+
         if validate:
             return make_response(jsonify(validate), 404)
         else:
@@ -268,14 +317,29 @@ class AdminUpdateProd(Resource):
             tax = request.json['tax']
             supplier = request.json['supplier']
             qt = request.json['qt']
-            alterResale = request.json['alterResale']
             discount = request.json['discount']
             description = request.json['description']
             datePurchase = request.json['datePurchase']
-            token = product_db.token
+            sector = request.json['sector']
+            supplierCode = request.json.get('supplierCode')  
+            manufacturer = request.json.get('manufacturer')
+            weight = request.json.get('weight')
+            dimensions = request.json.get('dimensions')
+            lastUpdated = request.json.get('lastUpdated')
+            reorderPoint = request.json.get('reorderPoint')
+            restockTime = request.json.get('restockTime')
+            warrantyInfo = request.json.get('warrantyInfo')
+            batchInfo = request.json.get('batchInfo')
+            expiryDate = request.json.get('expiryDate')
+            materialOrIngredients = request.json.get('materialOrIngredients')
+            safetyRating = request.json.get('safetyRating')
+            shippingRestrictions = request.json.get('shippingRestrictions')
+            barcode = request.json.get('barcode')
+            weightUnit = request.json.get('weightUnit')
+            dimensionsUnit = request.json.get('dimensionsUnit')
+            token_db = product_db.token
 
-        
-        prodNameValidate = validator.validate_name(prodName)
+        prodNameValidate = validator.validateGlobalText(prodName, True, False, 3, 100)
         if prodNameValidate != True:
             verify = False
             errorTypes['prodName'] = prodNameValidate
@@ -283,48 +347,146 @@ class AdminUpdateProd(Resource):
         if type(valueResale) != float:
             verify = False
             errorTypes['valueResale'] = 'Invalid format.'
-        
-        if type(cust) != float:
-            verify = False
-            errorTypes['cust'] = 'Invalid format.'
-        
-        if tax:
-            if type(tax) != float:
-                verify = False
-                errorTypes['tax'] = 'Invalid format.'
-        
-        if alterResale:
-            if type(alterResale) != float:
-                verify = False
-                errorTypes['alterResale'] = 'Invalid format.'
 
-        if discount:
-            if type(discount) != float:
-                verify = False
-                errorTypes['discount'] = 'Invalid format.'
         
-        if description in request.json:
-            description = request.json['description']
-            validateDescription = validator.validate_description(description)
-            if validateDescription != True:
-                verify = False
-                errorTypes['description'] = validateDescription
-        else:
-            description = None
-
-
         if type(qt) != int:
             verify = False
             errorTypes['qt'] = 'Invalid format.'
 
+        if manufacturer != '':
+            manufacturerValidate = validator.validateGlobalText(manufacturer, False, False, 3, 100)
+            if manufacturerValidate != True:
+                verify = False
+                errorTypes['manufacturer'] = manufacturerValidate
+
         
+        if lastUpdated == '':
+            lastUpdated = None
+
+        if expiryDate == '':
+            expiryDate = None
+
+        if barcode != '':
+            barcodeValidate = validator.validateBarCode(barcode)
+            if barcodeValidate != True:
+                verify = False
+                errorTypes['barcode'] = 'Invalid format.'
+        
+        if supplierCode != '':
+            supplierCodeValidate = validator.validateSupplierCode(supplierCode)
+            if supplierCodeValidate != True:
+                verify = False
+                errorTypes['supplierCode'] = 'Invalid format.'
+
+        
+        if cust != '':
+            if type(cust) != float:
+                verify = False
+                errorTypes['cust'] = 'Invalid format.'
+
+
+        if tax != '':
+            if tax and type(tax) != float:
+                verify = False
+                errorTypes['tax'] = 'Invalid format.'
+
+        if discount != '':
+            if discount and type(discount) != float:
+                    verify = False
+                    errorTypes['discount'] = 'Invalid format.'
+        
+        
+        if sector != '':
+            sectorValidate = validator.validateGlobalText(sector, False, False, 3, 100)
+            if sectorValidate != True:
+                verify = False
+                errorTypes['sector'] = sectorValidate
+            else:
+                sectorName = sector_service.sector_getBy_name(sector)
+                if not sectorName:
+                    tokenSector = secrets.token_hex(6)
+                    new_sector = Sector(name=sector, token=tokenSector)
+                    sector_service.sector_register(new_sector)
+                    sectorName = sector_service.sector_getBy_name(sector)
+                    sector = sectorName.name
+                else:
+                    sectorName = sector_service.sector_getBy_name(sector)
+                    sector = sectorName.name
+
+        if description in request.json:
+            description = request.json['description']
+            validateDescription = validator.validateGlobalText(description, False, False, 3, 2048)
+            if validateDescription != True:
+                verify = False
+                errorTypes['description'] = validateDescription
+
+
+
+        if weight and type(weight) != float:
+            verify = False
+            errorTypes['weight'] = 'Invalid format.'
+
+        if datePurchase == '':
+            datePurchaseValidate = validator.date_validate(datePurchase)
+            if datePurchaseValidate != True:
+                verify = False
+                errorTypes['datePurchase'] = datePurchaseValidate
+
+
+        if reorderPoint and type(reorderPoint) != int:
+            verify = False
+            errorTypes['reorderPoint'] = 'Invalid format.'
+
+            
+
+        if restockTime and type(restockTime) != int:
+            verify = False
+            errorTypes['restockTime'] = 'Invalid format.'
+
+
+        if supplier != '':
+            supplierValidate = validator.validateGlobalText(supplier, False, False, 3, 100)
+            if supplierValidate != True:
+                verify = False
+                errorTypes['supplier'] = supplierValidate
+
+        if warrantyInfo != '':
+            warrantyInfoValidate = validator.validateGlobalText(warrantyInfo, False, False, 3, 100)
+            if warrantyInfoValidate != True:
+                verify = False
+                errorTypes['warrantyInfo'] = warrantyInfoValidate
+        
+        if batchInfo != '':
+            batchInfoValidate = validator.validateGlobalText(batchInfo, False, False, 3, 100)
+            if batchInfoValidate != True:
+                verify = False
+                errorTypes['batchInfo'] = batchInfoValidate
+
+        if materialOrIngredients != '':
+            materialOrIngredientsValidate = validator.validateGlobalText(materialOrIngredients, False, False, 3, 100)
+            if materialOrIngredientsValidate != True:
+                verify = False
+                errorTypes['materialOrIngredients'] = materialOrIngredientsValidate
+
+        if safetyRating != '':
+            safetyRatingValidate = validator.validateGlobalText(safetyRating, False, False, 3, 100)
+            if safetyRatingValidate != True:
+                verify = False
+                errorTypes['safetyRating'] = safetyRatingValidate
+
+        if shippingRestrictions != '':
+            shippingRestrictionsValidate = validator.validateGlobalText(shippingRestrictions, False, False, 3, 100)
+            if shippingRestrictionsValidate != True:
+                verify = False
+                errorTypes['shippingRestrictions'] = shippingRestrictionsValidate
+        
+
         if verify:
-            upgrade_product = product.Product(prodName=prodName, valueResale=valueResale, cust=cust, tax=tax, supplier=supplier, qt=qt, alterResale=alterResale, discount=discount, description=description, datePurchase=datePurchase, token=token)
-            product_service.product_update(product_db, upgrade_product)
-            response = product_service.product_list_id(id)
-            return make_response(ps.jsonify(response), 200)
+            new_product = product.Product(prodName=prodName, valueResale=valueResale, qt=qt, manufacturer=manufacturer, lastUpdated=lastUpdated, expiryDate=expiryDate, barcode=barcode, supplierCode=supplierCode, cust=cust, tax=tax, discount=discount, sector=sector, description=description, weight=weight, datePurchase=datePurchase, reorderPoint=reorderPoint, restockTime=restockTime, supplier=supplier, warrantyInfo=warrantyInfo, batchInfo=batchInfo, materialOrIngredients=materialOrIngredients, safetyRating=safetyRating, shippingRestrictions=shippingRestrictions, token=token_db, weightUnit=weightUnit, dimensions=dimensions, dimensionsUnit=dimensionsUnit)
+            result = product_service.product_update(product_db, new_product)
+            return make_response(jsonify(result), 200)
         else:
-            return make_response(jsonify(errorTypes), 404)
+            return make_response(jsonify(errorTypes), 400)        
 
 
 ##Delete
@@ -344,7 +506,7 @@ class SectorList(Resource):
     def get(self):
         sectors = sector_service.sector_list()
         if not sectors:
-            return make_response(jsonify("Sectors not found"), 404)
+            return make_response(jsonify("Sectors not found"), 202)
         return make_response(jsonify(sectors), 200)
     
 
@@ -354,7 +516,7 @@ api.add_resource(AdminGetProdToken, '/axiosadmin/products/getByToken/<string:tok
 
 api.add_resource(GetAllandSearch, '/axiosadmin/gestao/produtos')
 
-api.add_resource(AdminUpdateProd, '/admin_dashboard/product_update/<int:id>')
+api.add_resource(AdminUpdateProd, '/axiosadmin/products/products_update/<string:token>')
 
 api.add_resource(AdminDeleteProd, '/admin_dashboard/product_delete/<int:id>')
 
