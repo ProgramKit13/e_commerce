@@ -3,8 +3,7 @@ from sqlalchemy import or_, and_
 
 def paginate_advanced(model, schema, per_page, **filters):
     page = int(request.args.get('page', 1))
-
-    search_fields = ['nome', 'descricao', 'setor', 'fornecedor', 'barcode', 'fabricante']
+    search_fields = ['produto_nome', 'produto_descricao', 'produto_setor', 'produto_fornecedor', 'produto_barcode', 'produto_fabricante', 'fornecedor_nome', 'fornecedor_cnpj']
     model_filters = []
     translated_filters = {}
     for field, value in filters.items():
@@ -17,9 +16,7 @@ def paginate_advanced(model, schema, per_page, **filters):
             translated_filters[field] = value
 
     query = model.query.filter(and_(*model_filters))
-
     page_obj = query.paginate(page=page, per_page=per_page)
-
     next_url = url_for(request.endpoint, page=page_obj.next_num if page_obj.has_next else page_obj.page, per_page=per_page, **translated_filters)
     prev_url = url_for(request.endpoint, page=page_obj.prev_num if page_obj.has_prev else page_obj.page, per_page=per_page, **translated_filters)
 
@@ -36,12 +33,14 @@ def paginate_advanced(model, schema, per_page, **filters):
 
 def translate_search_field(field):
     return {
-        'nome': 'prodName',
-        'descricao': 'description',
-        'setor': 'sector',
-        'fornecedor': 'supplier',
-        'barcode': 'barcode',
-        'fabricante': 'manufacturer'
+        'produto_nome': 'prodName',
+        'produto_descricao': 'description',
+        'produto_setor': 'sector',
+        'produto_fornecedor': 'supplier',
+        'produto_barcode': 'barcode',
+        'produto_fabricante': 'manufacturer',
+        'fornecedor_nome': 'supplierName',
+        'fornecedor_cnpj': 'supplierCnpj'
     }.get(field, field)
 
 

@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 0bcdff5a1840
+Revision ID: dfb176e73a52
 Revises: 
-Create Date: 2023-06-18 14:01:25.868613
+Create Date: 2023-06-23 09:38:51.182956
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '0bcdff5a1840'
+revision = 'dfb176e73a52'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -61,17 +61,18 @@ def upgrade():
     )
     op.create_table('suppliers',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
-    sa.Column('name', sa.String(length=50), nullable=False),
-    sa.Column('email', sa.String(length=50), nullable=False),
-    sa.Column('state', sa.String(length=2), nullable=False),
-    sa.Column('city', sa.String(length=50), nullable=False),
-    sa.Column('neighborhood', sa.String(length=50), nullable=False),
-    sa.Column('street', sa.String(length=100), nullable=False),
-    sa.Column('number', sa.Integer(), nullable=False),
-    sa.Column('complement', sa.String(length=100), nullable=True),
-    sa.Column('zipCode', sa.String(length=9), nullable=False),
-    sa.Column('cnpj', sa.String(length=18), nullable=False),
-    sa.Column('phone', sa.String(length=13), nullable=True),
+    sa.Column('supplierName', sa.String(length=50), nullable=False),
+    sa.Column('supplierEmail', sa.String(length=50), nullable=False),
+    sa.Column('supplierState', sa.String(length=2), nullable=False),
+    sa.Column('supplierCity', sa.String(length=50), nullable=False),
+    sa.Column('supplierNeighborhood', sa.String(length=50), nullable=False),
+    sa.Column('supplierStreet', sa.String(length=100), nullable=False),
+    sa.Column('supplierNumber', sa.Integer(), nullable=False),
+    sa.Column('supplierComplement', sa.String(length=100), nullable=True),
+    sa.Column('supplierZipCode', sa.String(length=9), nullable=False),
+    sa.Column('supplierCnpj', sa.String(length=18), nullable=False),
+    sa.Column('supplierPhone_01', sa.String(length=13), nullable=True),
+    sa.Column('supplierPhone_02', sa.String(length=13), nullable=True),
     sa.Column('token', sa.String(length=16), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('id')
@@ -92,6 +93,7 @@ def upgrade():
     op.create_table('adminPreferences',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('productsPerPage', sa.Enum('fifty', 'hundred', 'hundredFifty', 'twoHundred', name='productsperpage'), nullable=False),
+    sa.Column('suppliersPerPage', sa.Enum('fifty', 'hundred', 'hundredFifty', 'twoHundred', name='suppliersperpage'), nullable=False),
     sa.Column('tokenUser', sa.String(length=16), nullable=False),
     sa.ForeignKeyConstraint(['tokenUser'], ['user.token'], ),
     sa.PrimaryKeyConstraint('id'),

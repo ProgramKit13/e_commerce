@@ -1,8 +1,8 @@
 from ..models import adminPreferences_model
 from api import db
 
-def create_adminPreferences(token, productsPerPage):
-    adminPreferences = adminPreferences_model.AdminPreferences(tokenUser=token, productsPerPage=productsPerPage)
+def create_adminPreferences(token, productsPerPage, suppliersPerPage):
+    adminPreferences = adminPreferences_model.AdminPreferences(tokenUser=token, productsPerPage=productsPerPage, suppliersPerPage=suppliersPerPage)
     db.session.add(adminPreferences)
     db.session.commit()
     return adminPreferences
@@ -16,13 +16,20 @@ def get_adminPreferencesPerpage_by_token(token):
     adminPreferences = adminPreferences_model.AdminPreferences.query.filter(adminPreferences_model.AdminPreferences.tokenUser == token).first()
     return adminPreferences
 
-def update_adminPreferencesPerPage(adminPreferences, productsPerPage):
-    adminPreferences.productsPerPage = productsPerPage
+def update_adminPreferencesPerPage(adminPreferences, attribute_name, value):
+    setattr(adminPreferences, attribute_name, value)
     db.session.commit()
 
 
-def listPerpageProductsEnum():
-    enum = adminPreferences_model.productsPerPage
+def listPerpage(attribute_name):
+    try:
+        enum = getattr(adminPreferences_model, attribute_name)
+        return [i.value for i in enum]
+    except AttributeError:
+        return None
+
+def listPerpageSuppliersEnum():
+    enum = adminPreferences_model.suppliersPerPage
     return [i.value for i in enum]
 
 

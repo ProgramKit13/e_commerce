@@ -161,7 +161,6 @@ class AdminProdRegister(Resource):
         if reorderPoint and type(reorderPoint) != int:
             verify = False
             errorTypes['reorderPoint'] = 'Invalid format.'
-        print(reorderPoint)
             
 
         if restockTime and type(restockTime) != int:
@@ -257,7 +256,7 @@ class AdminGetProdToken(Resource):
     
 
 ####List and search
-class GetAllandSearch(Resource):
+class GetAllandSearchProduct(Resource):
     @admin_required
     def get(self):
         try:
@@ -273,11 +272,10 @@ class GetAllandSearch(Resource):
             infoPaginate = paginate_advanced(Product, ps, per_page, **filters)
         except Exception as e:
             current_app.logger.error(f"Error while searching for product: {type(e).__name__} {e}")
-
             return make_response(jsonify('Error while searching for product'), 500)
 
         if not infoPaginate['list']:
-            return make_response(jsonify('Not product registred'), 202)
+            return make_response(jsonify('Not product registred'), 200)
 
         return make_response(jsonify(infoPaginate), 200)
 
@@ -294,7 +292,6 @@ class AdminUpdateProd(Resource):
             return make_response(jsonify("Product not fount."), 404)
         ps = prod_schema.ProdSchema()
         validate = ps.validate(request.json)
-        print(validate)
         if 'valueResale' in request.json:
             request.json['valueResale'] = float(request.json['valueResale'])
         if 'cust' in request.json:
@@ -514,7 +511,7 @@ api.add_resource(AdminProdRegister, '/admin_dashboard/product_register')
 
 api.add_resource(AdminGetProdToken, '/axiosadmin/products/getByToken/<string:token>')
 
-api.add_resource(GetAllandSearch, '/axiosadmin/gestao/produtos')
+api.add_resource(GetAllandSearchProduct, '/axiosadmin/gestao/produtos')
 
 api.add_resource(AdminUpdateProd, '/axiosadmin/products/products_update/<string:token>')
 

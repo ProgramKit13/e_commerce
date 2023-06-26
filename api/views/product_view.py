@@ -9,7 +9,6 @@ class ShowAllProds(Resource):
     def get(self):
         prods = product_service.product_list()
         ps = prod_schema.ProdSchema(many=True)
-        print(type(prods))
         return make_response(ps.jsonify(prods), 200)
     
 class ProdSearchId(Resource):

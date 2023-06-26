@@ -12,7 +12,6 @@ class PaymentViewPost(Resource):
     def post(self):
         card_token_object = request.json
         card_token_created = mercadopago.card_token().create(card_token_object)
-        print(card_token_created)
 
         payment_data = {
              "transaction_amount": 100,

@@ -1,7 +1,8 @@
 class AdminPreferences:
-    def __init__(self, productsPerPage, tokenUser):
+    def __init__(self, productsPerPage, suppliersPerPage, tokenUser):
         self.productsPerPage = productsPerPage
         self.tokenUser = tokenUser
+        self.suppliersPerPage = suppliersPerPage
 
     @property
     def productsPerPage(self):
@@ -11,9 +12,18 @@ class AdminPreferences:
         self.__productsPerPage = productsPerPage
 
     @property
+    def suppliersPerPage(self):
+        return self.__suppliersPerPage
+    @suppliersPerPage.setter
+    def suppliersPerPage(self, suppliersPerPage):
+        self.__suppliersPerPage = suppliersPerPage
+        
+
+    @property
     def tokenUser(self):
         return self.__tokenUser  
     @tokenUser.setter
     def tokenUser(self, tokenUser):
         self.__tokenUser = tokenUser
+
 

@@ -29,6 +29,7 @@ class UserRegister(Resource):
 
             ##Preferences
             productsPerPage = 'fifty'
+            suppliersPerPage = 'fifty'
                 
             validateEmail = validator.email_validate(email)
             if validateEmail is not True:
@@ -52,7 +53,7 @@ class UserRegister(Resource):
                 new_user = user.User(name=name, email=email, password=password, token=token, dateCreation=dateCreation, adminAccess=adminAccess)
                 result = user_service.user_register(new_user)
 
-                adminPreferences_service.create_adminPreferences(token, productsPerPage)
+                adminPreferences_service.create_adminPreferences(token, productsPerPage, suppliersPerPage)
                 ref = cs.jsonify(result)
                 return make_response(ref, 201)
             else:

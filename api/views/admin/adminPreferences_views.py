@@ -65,23 +65,29 @@ class UpdatePreferencePerPageAdmin(Resource):
         getUser = user_service.get_user_id(getdUserIdentify)
         adminPreferences = adminPreferences_service.get_adminPreferencesPerpage_by_token(getUser.token)  # agora isto é uma instância completa do modelo, não apenas um valor.
 
+        attribute_name = request.json['attribute_name']
         new_value = request.json['new_value']
         new_value_name = adminPreferences_service.get_enum_name_by_value(new_value)
         
         if new_value_name is None:
             return {"message": "Valor inválido"}, 400
         else:
-            adminPreferences_service.update_adminPreferencesPerPage(adminPreferences, new_value_name)  # passar a instância completa aqui também
+            adminPreferences_service.update_adminPreferencesPerPage(adminPreferences, attribute_name, new_value_name)  # passar a instância completa aqui também
             return {"message": "Valor atualizado com sucesso"}, 200
 
 
-class ListPerpageProductsEnum(Resource):
+class ListPerpage(Resource):
     @admin_required
-    def get(self):
-        listEnum = adminPreferences_service.listPerpageProductsEnum()
-        return make_response(jsonify({"enumValues": listEnum}), 200)
+    def post(self):
+        attribute_name = request.json['attribute_name']
+        listEnum = adminPreferences_service.listPerpage(attribute_name)
+        if listEnum:
+            return make_response(jsonify(listEnum), 200)
+        else:
+            return make_response(jsonify({"message": "Atributo não encontrado"}), 400)
+
 
 api.add_resource(CreateAdminPreferences, '/adminPreferences/create')
 api.add_resource(UpdateAdminPreferences, '/adminPreferences/update')
-api.add_resource(ListPerpageProductsEnum, '/axiosadmin/adminPreferences/selectPerPage')
+api.add_resource(ListPerpage, '/axiosadmin/adminPreferences/selectPerPage')
 api.add_resource(UpdatePreferencePerPageAdmin, '/axiosadmin/adminPreferences/updatePerPage')

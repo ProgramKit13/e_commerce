@@ -4,7 +4,7 @@ from api import db
 
 ##Register
 def supplier_register(supplier):
-    supplier_bd = supplier_model.Supplier(name=supplier.name, email=supplier.email,  neighborhood=supplier.neighborhood, street=supplier.street, number=supplier.number, state=supplier.state, city=supplier.city, zipCode=supplier.zipCode, complement=supplier.complement, cnpj=supplier.cnpj, phone=supplier.phone, token=supplier.token)
+    supplier_bd = supplier_model.Supplier(supplierName=supplier.supplierName, supplierEmail=supplier.supplierEmail, supplierState=supplier.supplierState, supplierCity=supplier.supplierCity, supplierNeighborhood=supplier.supplierNeighborhood, supplierStreet=supplier.supplierStreet, supplierNumber=supplier.supplierNumber, supplierComplement=supplier.supplierComplement, supplierZipCode=supplier.supplierZipCode, supplierCnpj=supplier.supplierCnpj, token=supplier.token, supplierPhone_01=supplier.supplierPhone_01, supplierPhone_02=supplier.supplierPhone_02)
     db.session.add(supplier_bd)
     db.session.commit()
 
@@ -26,18 +26,18 @@ def supplier_id(id):
 
 ##Update
 def supplier_update(oldSupplier, newSupplier):
-        oldSupplier.name = newSupplier.name
-        oldSupplier.email = newSupplier.email
-        oldSupplier.state = newSupplier.state
-        oldSupplier.city = newSupplier.city
-        oldSupplier.neighborhood = newSupplier.neighborhood
-        oldSupplier.street = newSupplier.street
-        oldSupplier.number = newSupplier.number
-        oldSupplier.complement = newSupplier.complement
-        oldSupplier.zipCode = newSupplier.zipCode
-        oldSupplier.cnpj = newSupplier.cnpj
-        oldSupplier.phone = newSupplier.phone
-        oldSupplier.token = newSupplier.token
+        oldSupplier.supplierName = newSupplier.supplierName
+        oldSupplier.supplierEmail = newSupplier.supplierEmail
+        oldSupplier.supplierState = newSupplier.supplierState
+        oldSupplier.supplierCity = newSupplier.supplierCity
+        oldSupplier.supplierNeighborhood = newSupplier.supplierNeighborhood
+        oldSupplier.supplierStreet = newSupplier.supplierStreet
+        oldSupplier.supplierNumber = newSupplier.supplierNumber
+        oldSupplier.supplierComplement = newSupplier.supplierComplement
+        oldSupplier.supplierZipCode = newSupplier.supplierZipCode
+        oldSupplier.supplierCnpj = newSupplier.supplierCnpj
+        oldSupplier.supplierPhone_01 = newSupplier.supplierPhone_01
+        oldSupplier.supplierPhone_02 = newSupplier.supplierPhone_02
         db.session.commit()
 ########################################
 
